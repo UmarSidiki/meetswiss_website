@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
-export const runtime = 'nodejs';
-
 type ContactField = {
   label?: string;
   value?: string;
@@ -91,7 +89,7 @@ function buildHtmlBody(
   const fieldRows = fields
     .map(
       (field) =>
-        `<tr><td style="padding:6px 12px;font-weight:600;color:#2b251a;">${escapeHtml(field.label)}</td><td style="padding:6px 12px;color:#1d1a12;">${escapeHtml(field.value)}</td></tr>`
+        `<tr><td style="padding:6px 12px;font-weight:600;color:#2b251a;">${escapeHtml(field.label ?? 'Field')}</td><td style="padding:6px 12px;color:#1d1a12;">${escapeHtml(field.value ?? '')}</td></tr>`
     )
     .join('');
 
@@ -159,8 +157,8 @@ export async function POST(request: Request) {
     findFieldValue(
       fields,
       (field) =>
-        field.type === 'textarea' ||
-        field.label?.toLowerCase().includes('message')
+        (field.type === 'textarea' ||
+        field.label?.toLowerCase().includes('message')) ?? false
     );
   const subject = safeValue(body.subject) || 'New contact request';
 

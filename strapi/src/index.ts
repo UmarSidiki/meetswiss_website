@@ -29,7 +29,6 @@ export default {
       'api::global.global',
       'api::page.page',
       'api::article.article',
-      'api::city.city',
       'api::service.service',
       'api::fleet.fleet',
       'api::blog-page.blog-page',

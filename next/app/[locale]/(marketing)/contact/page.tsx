@@ -237,8 +237,9 @@ const buildContactCopy = (
       formBlock?.section?.sub_heading || FALLBACK_COPY.supportSubtitle,
     responseNote: FALLBACK_COPY.responseNote,
     helperMessage:
-      pageData?.seo?.twitterDescription || FALLBACK_COPY.helperMessage,
-    successMessage: pageData?.seo?.twitterTitle || FALLBACK_COPY.successMessage,
+      (pageData?.seo as any)?.twitterDescription || FALLBACK_COPY.helperMessage,
+    successMessage:
+      (pageData?.seo as any)?.twitterTitle || FALLBACK_COPY.successMessage,
     fields: formFields.fields,
     submitLabel: formFields.submitLabel,
     formTitle:
@@ -351,17 +352,17 @@ export default async function ContactPage({
       contactPoint: [
         contactEmail
           ? {
-              '@type': 'ContactPoint',
-              contactType: 'customer support',
-              email: contactEmail,
-            }
+            '@type': 'ContactPoint',
+            contactType: 'customer support',
+            email: contactEmail,
+          }
           : null,
         contactPhone
           ? {
-              '@type': 'ContactPoint',
-              contactType: 'customer support',
-              telephone: contactPhone,
-            }
+            '@type': 'ContactPoint',
+            contactType: 'customer support',
+            telephone: contactPhone,
+          }
           : null,
       ].filter(Boolean),
     },

@@ -32,9 +32,9 @@
     "fuzzy-search": "^3.2.1",
     "mini-svg-data-uri": "^1.4.4",
     "negotiator": "^0.6.3",
-    "nodemailer": "^6.9.16",
     "next": "^16.0.0",
     "next-view-transitions": "^0.2.0",
+    "nodemailer": "^6.9.16",
     "qs": "^6.14.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -45,11 +45,13 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.168.0",
-    "three-globe": "^2.31.1"
+    "three-globe": "^2.31.1",
+    "vercel": "^52.2.1"
   },
   "devDependencies": {
     "@types/negotiator": "^0.6.3",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.14",
     "@types/qs": "^6.9.16",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

@@ -92,17 +92,16 @@ async function findSingleTypeWithStatusFallback(
 }
 
 async function isDraftModeEnabled(): Promise<boolean> {
+  // In development or during static generation, skip draft mode check
+  if (process.env.ENVIRONMENT === 'development') {
+    return false;
+  }
+
   try {
     return (await draftMode()).isEnabled;
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes('outside a request scope')
-    ) {
-      return false;
-    }
-
-    throw error;
+    // Return false if we're outside a request scope (e.g., during build)
+    return false;
   }
 }
 
