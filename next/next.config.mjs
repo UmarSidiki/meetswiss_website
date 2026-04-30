@@ -11,29 +11,32 @@ const nextConfig = {
     ...(process.env.NODE_ENV === 'development' ? { unoptimized: true } : {}),
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
-    // In production, images are served from public/strapi-images/ (local).
-    // Remote patterns are only needed in development for live Strapi preview.
-    ...(process.env.NODE_ENV === 'development'
-      ? {
-          remotePatterns: [
-            {
-              protocol: 'http',
-              hostname: 'localhost',
-              port: '1337',
-              pathname: '/uploads/**',
-            },
-            {
-              protocol: 'https',
-              hostname: process.env.IMAGE_HOSTNAME || 'localhost',
-              pathname: '/uploads/**',
-            },
+    // Images are always served from Strapi (remote).
+    // IMAGE_HOSTNAME must be set in production (e.g. api.meetswiss.com).
+    remotePatterns: [
+      // Development: local Strapi
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '1337',
+        pathname: '/uploads/**',
+      },
+      // Production: Strapi on VPS
+      ...(process.env.IMAGE_HOSTNAME
+        ? [
             {
               protocol: 'https',
-              hostname: '*.strapiapp.com',
+              hostname: process.env.IMAGE_HOSTNAME,
+              pathname: '/uploads/**',
             },
-          ],
-        }
-      : {}),
+          ]
+        : []),
+      // Strapi Cloud (if ever used)
+      {
+        protocol: 'https',
+        hostname: '*.strapiapp.com',
+      },
+    ],
   },
   pageExtensions: ['ts', 'tsx'],
   async redirects() {

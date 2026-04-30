@@ -1,15 +1,13 @@
 import { API_URL } from '../utils';
 
-const isDev = process.env.ENVIRONMENT === 'development';
-
 /**
  * Resolves a Strapi image URL to a servable path.
  *
- * - **Development**: proxies through Strapi (`NEXT_PUBLIC_API_URL + url`)
- * - **Production**: serves from local build-time cache (`/strapi-images/...`)
+ * Images are always served directly from Strapi (via `NEXT_PUBLIC_API_URL`).
+ * In development this is typically `http://localhost:1337`.
+ * In production this is your public Strapi domain (e.g. `https://api.meetswiss.com`).
  *
- * Images are downloaded to `public/strapi-images/` during `next build`
- * via `scripts/download-strapi-images.mjs`.
+ * Absolute URLs (http/https/data) are returned as-is.
  */
 export function strapiImage(url: string): string {
   if (!url) return '';
@@ -26,10 +24,7 @@ export function strapiImage(url: string): string {
 
   // Relative Strapi path (e.g. /uploads/car_abc123.jpg)
   if (url.startsWith('/')) {
-    if (isDev) {
-      return API_URL + url;
-    }
-    return `/strapi-images${url}`;
+    return API_URL + url;
   }
 
   return url;

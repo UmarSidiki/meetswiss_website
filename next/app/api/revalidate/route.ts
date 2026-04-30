@@ -1,9 +1,5 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
-import { createWriteStream, existsSync, mkdirSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 
 import { i18n } from '@/i18n.config';
 import { revalidateContent } from '@/lib/strapi';
@@ -13,77 +9,6 @@ type StrapiWebhookPayload = {
   model?: string;
   entry?: Record<string, unknown>;
 };
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
-const IMAGES_DIR = join(process.cwd(), 'public', 'strapi-images');
-
-/**
- * Scan a webhook entry payload for image URLs and download any that
- * are missing from the local strapi-images cache.
- */
-async function syncEntryImages(
-  entry: Record<string, unknown>
-): Promise<number> {
-  const urls = new Set<string>();
-
-  // Recursively scan the entry for image URLs
-  function scan(obj: unknown) {
-    if (!obj || typeof obj !== 'object') return;
-    if (Array.isArray(obj)) {
-      obj.forEach(scan);
-      return;
-    }
-    for (const [key, val] of Object.entries(obj as Record<string, unknown>)) {
-      if (
-        key === 'url' &&
-        typeof val === 'string' &&
-        val.includes('/uploads/')
-      ) {
-        urls.add(val);
-      }
-      if (typeof val === 'object' && val !== null) {
-        scan(val);
-      }
-    }
-  }
-
-  scan(entry);
-
-  let downloaded = 0;
-  for (const url of urls) {
-    const relativePath = url.startsWith('http') ? new URL(url).pathname : url;
-    const destPath = join(IMAGES_DIR, relativePath);
-
-    // Skip if already exists
-    try {
-      if (statSync(destPath).isFile()) continue;
-    } catch {
-      /* doesn't exist, proceed */
-    }
-
-    const downloadUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
-    try {
-      const dir = dirname(destPath);
-      if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-
-      const res = await fetch(downloadUrl);
-      if (res.ok && res.body) {
-        const body = Readable.fromWeb(
-          res.body as import('node:stream/web').ReadableStream
-        );
-        await pipeline(body, createWriteStream(destPath));
-        downloaded++;
-      }
-    } catch (err) {
-      console.warn(
-        `[revalidate] Failed to download image ${downloadUrl}:`,
-        err
-      );
-    }
-  }
-
-  return downloaded;
-}
 
 const CONTENT_MAP: Record<string, { tagType: 'collection' | 'single' }> = {
   page: { tagType: 'collection' },
@@ -184,20 +109,9 @@ export async function POST(request: Request) {
 
   revalidateAllKnownPaths();
 
-  // Sync images from the entry payload so new/changed images are available locally
-  let imagesSynced = 0;
-  if (payload.entry && typeof payload.entry === 'object') {
-    try {
-      imagesSynced = await syncEntryImages(payload.entry);
-    } catch (err) {
-      console.warn('[revalidate] Image sync failed:', err);
-    }
-  }
-
   return NextResponse.json({
     revalidated: true,
     model: payload.model || null,
     event: payload.event || null,
-    imagesSynced,
   });
 }

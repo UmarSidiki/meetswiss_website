@@ -1,0 +1,14 @@
+node_modules
+.tmp
+.cache
+.git
+dist
+build
+*.md
+!README.md
+data/
+.env
+.env.local
+.env.*.local
+.strapi/
+.strapi-updater.json

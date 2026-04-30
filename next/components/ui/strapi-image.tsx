@@ -11,18 +11,13 @@ interface StrapiImageProps extends Omit<
   alt: string | null;
 }
 
-const isDev = process.env.ENVIRONMENT === 'development';
-
 export function getStrapiMedia(url: string | null) {
   if (url == null) return null;
   if (url.startsWith('data:')) return url;
   if (url.startsWith('http') || url.startsWith('//')) return url;
 
-  // Relative Strapi path → local in prod, Strapi API in dev
-  if (isDev) {
-    return API_URL + url;
-  }
-  return `/strapi-images${url}`;
+  // Relative Strapi path → always resolve via Strapi API URL
+  return API_URL + url;
 }
 
 export function StrapiImage({

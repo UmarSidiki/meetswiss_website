@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "download-images": "node scripts/download-strapi-images.mjs",
-    "build": "node scripts/download-strapi-images.mjs && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "clean": "rm -rf .next && rm -rf node_modules && npm i"
