@@ -1,0 +1,135 @@
+import { Metadata } from 'next';
+import { ViewTransitions } from 'next-view-transitions';
+import { Bodoni_Moda, Manrope } from 'next/font/google';
+import { draftMode } from 'next/headers';
+import type { PropsWithChildren } from 'react';
+import React from 'react';
+
+import { Banner } from '@/components/banner';
+import { DraftModeBanner } from '@/components/draft-mode-banner';
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
+import { StructuredData } from '@/components/seo/structured-data';
+import { AIToast } from '@/components/toast';
+import { getAbsoluteUrl } from '@/lib/seo/config';
+import { fetchSeoSettings } from '@/lib/seo/settings';
+import { generateMetadataObject } from '@/lib/shared/metadata';
+import { fetchSingleType } from '@/lib/strapi';
+import { strapiImage } from '@/lib/strapi/strapiImage';
+import { cn } from '@/lib/utils';
+import type { LocaleParamsProps } from '@/types/types';
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '600', '700'],
+});
+
+const bodoni = Bodoni_Moda({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['500', '700'],
+  variable: '--font-luxury',
+});
+
+// Default Global SEO for pages without them
+export async function generateMetadata({
+  params,
+}: PropsWithChildren<LocaleParamsProps>): Promise<Metadata> {
+  const { locale } = await params;
+  const [pageData, seoSettings] = await Promise.all([
+    fetchSingleType('global', { locale }),
+    fetchSeoSettings(locale),
+  ]);
+
+  const metadata = generateMetadataObject(pageData.seo, {
+    locale,
+    pathname: '/',
+    siteSettings: seoSettings,
+  });
+
+  metadata.applicationName = seoSettings.siteName;
+  metadata.authors = seoSettings.organizationName
+    ? [{ name: seoSettings.organizationName, url: seoSettings.organizationUrl }]
+    : undefined;
+  metadata.creator = seoSettings.organizationName;
+  metadata.publisher = seoSettings.organizationName;
+  metadata.verification = {
+    google: seoSettings.googleSiteVerification,
+    yandex: seoSettings.yandexVerification,
+    other: seoSettings.bingSiteVerification
+      ? { 'msvalidate.01': seoSettings.bingSiteVerification }
+      : undefined,
+  };
+  metadata.other = {
+    ...(seoSettings.contactEmail
+      ? {
+          'contact:email': seoSettings.contactEmail,
+        }
+      : {}),
+    ...(seoSettings.facebookDomainVerification
+      ? {
+          'facebook-domain-verification':
+            seoSettings.facebookDomainVerification,
+        }
+      : {}),
+  };
+
+  return metadata;
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: PropsWithChildren<LocaleParamsProps>) {
+  const { isEnabled: isDraftMode } = await draftMode();
+  const { locale } = await params;
+  const [pageData, seoSettings] = await Promise.all([
+    fetchSingleType('global', { locale }),
+    fetchSeoSettings(locale),
+  ]);
+  const isDemo = process.env.NEXT_IS_DEMO === 'true';
+  const orgLogo = seoSettings.organizationLogo?.url;
+  const orgLogoAbsolute = orgLogo ? strapiImage(orgLogo) : undefined;
+  const logoData = orgLogoAbsolute ? { url: orgLogoAbsolute } : undefined;
+  const organizationLd = seoSettings.organizationName
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: seoSettings.organizationName,
+        url: seoSettings.organizationUrl || getAbsoluteUrl(`/${locale}`),
+        logo: orgLogoAbsolute,
+        email: seoSettings.contactEmail,
+        sameAs: [
+          ...(pageData.footer?.social_media_links || [])
+            .map((link: { URL?: string }) => link.URL)
+            .filter(Boolean),
+        ],
+      }
+    : null;
+
+  return (
+    <ViewTransitions>
+      <StructuredData data={[pageData.seo?.structuredData, organizationLd]} />
+      <div
+        className={cn(
+          manrope.className,
+          bodoni.variable,
+          'bg-charcoal antialiased h-full w-full'
+        )}
+      >
+        {isDemo && <Banner />}
+        <Navbar
+          data={pageData.navbar}
+          locale={locale}
+          hasBanner={isDemo}
+          logo={logoData}
+        />
+        {children}
+        <Footer data={pageData.footer} locale={locale} logo={logoData} />
+        <AIToast />
+        {isDraftMode && <DraftModeBanner />}
+      </div>
+    </ViewTransitions>
+  );
+}

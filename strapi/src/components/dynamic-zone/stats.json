@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_dynamic_zone_stats",
+  "info": {
+    "displayName": "Stats",
+    "icon": "chartPie",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "items": {
+      "displayName": "Items",
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.stat-item"
+    }
+  }
+}

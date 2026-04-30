@@ -1,0 +1,178 @@
+@import './prism.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Luxury Color Palette (OKLCH inspired, using hex approximations) */
+
+  /* Primary Surfaces - Dark Cinematic */
+  --surface-dark: #0a0a0a;
+  --surface-dark-alt: #111111;
+  --surface-dark-hover: #1a1a1a;
+
+  /* Accent - Warm Amber */
+  --amber-primary: #d4a574;
+  --amber-light: #e8c9a3;
+  --amber-dark: #b8844f;
+
+  /* Contrast - Cream */
+  --cream: #f5f1e8;
+  --cream-muted: #e8e3d8;
+  --cream-dim: #d9d2c5;
+
+  /* Supporting Colors */
+  --success: #6b9575;
+  --warning: #c99a6b;
+  --error: #a85555;
+  --info: #5b8a9f;
+
+  /* Text */
+  --text-primary: #f5f1e8;
+  --text-secondary: #b8b0a0;
+  --text-tertiary: #7a7268;
+
+  /* Legacy support */
+  --foreground-rgb: 245, 241, 232;
+  --primary: #d4a574;
+  --secondary: #f5f1e8;
+  --charcoal: #0a0a0a;
+  --lightblack: #111111;
+
+  /* Spacing Scale (4pt base) */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 0.75rem; /* 12px */
+  --space-lg: 1rem; /* 16px */
+  --space-xl: 1.5rem; /* 24px */
+  --space-2xl: 2rem; /* 32px */
+  --space-3xl: 3rem; /* 48px */
+  --space-4xl: 4rem; /* 64px */
+  --space-5xl: 6rem; /* 96px */
+
+  /* Typography - Fluid Sizing */
+  --text-xs: clamp(0.75rem, 1vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 1.2vw, 1rem);
+  --text-base: clamp(1rem, 1.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 2vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 2.5vw, 2rem);
+  --text-2xl: clamp(2rem, 3vw, 2.5rem);
+  --text-3xl: clamp(2.5rem, 4vw, 3.5rem);
+  --text-4xl: clamp(3rem, 5vw, 4.5rem);
+
+  /* Line Heights */
+  --lh-tight: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.8;
+}
+
+/* Font Families — matches fonts loaded in layout.tsx */
+:root {
+  --font-display: 'Bodoni Moda', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-body: 'Manrope', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono:
+    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 245, 241, 232;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: var(--charcoal);
+  font-family: var(--font-body), sans-serif;
+  line-height: var(--lh-normal);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), serif;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: var(--text-4xl);
+    line-height: var(--lh-tight);
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: var(--text-3xl);
+    line-height: var(--lh-tight);
+    letter-spacing: -0.015em;
+  }
+
+  h3 {
+    font-size: var(--text-2xl);
+    line-height: var(--lh-normal);
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-size: var(--text-xl);
+    line-height: var(--lh-normal);
+  }
+
+  p {
+    font-size: var(--text-base);
+    line-height: var(--lh-relaxed);
+    max-width: 75ch;
+  }
+
+  a {
+    color: var(--amber-primary);
+    transition: color 0.2s ease-out;
+  }
+
+  a:hover {
+    color: var(--amber-light);
+  }
+
+  code {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.9em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-display {
+    font-family: var(--font-display), serif;
+  }
+
+  .font-body {
+    font-family: var(--font-body), sans-serif;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono), monospace;
+  }
+}

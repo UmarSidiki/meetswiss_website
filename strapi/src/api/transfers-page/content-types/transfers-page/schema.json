@@ -1,0 +1,56 @@
+{
+  "kind": "singleType",
+  "collectionName": "transfers_pages",
+  "info": {
+    "singularName": "transfers-page",
+    "pluralName": "transfers-pages",
+    "displayName": "/transfers",
+    "description": "Content for the transfers listing page"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "sub_heading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo"
+    },
+    "localizations": {
+      "writable": false,
+      "private": false,
+      "configurable": false,
+      "visible": false,
+      "useJoinTable": false,
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::transfers-page.transfers-page"
+    }
+  }
+}

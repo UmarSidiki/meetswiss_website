@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_global_footer_columns",
+  "info": {
+    "displayName": "Footer Column",
+    "icon": "layout",
+    "description": "A footer link column with a heading and list of links"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    }
+  }
+}

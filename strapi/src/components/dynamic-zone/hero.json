@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_dynamic_zone_heroes",
+  "info": {
+    "displayName": "Hero",
+    "icon": "layout",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "slides": {
+      "displayName": "Slides",
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.hero-slide"
+    },
+    "form_embed_html": {
+      "type": "text"
+    },
+    "button": {
+      "displayName": "Button",
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_dynamic_zone_why_choose_us",
+  "info": {
+    "displayName": "Why_Choose_Us",
+    "icon": "shield",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "sub_heading": {
+      "type": "string"
+    },
+    "cards": {
+      "displayName": "Cards",
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.why-card"
+    }
+  }
+}

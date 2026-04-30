@@ -1,0 +1,71 @@
+{
+  "collectionName": "components_shared_seos",
+  "info": {
+    "displayName": "seo",
+    "icon": "search"
+  },
+  "options": {},
+  "attributes": {
+    "metaTitle": {
+      "required": true,
+      "type": "string",
+      "maxLength": 60
+    },
+    "metaDescription": {
+      "type": "string",
+      "required": true,
+      "minLength": 50
+    },
+    "metaImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "ogTitle": {
+      "type": "string",
+      "maxLength": 95
+    },
+    "ogDescription": {
+      "type": "text",
+      "maxLength": 250
+    },
+    "twitterTitle": {
+      "type": "string",
+      "maxLength": 95
+    },
+    "twitterDescription": {
+      "type": "text",
+      "maxLength": 250
+    },
+    "twitterImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "keywords": {
+      "type": "text",
+      "regex": "[^,]+"
+    },
+    "metaRobots": {
+      "type": "string",
+      "regex": "[^,]+"
+    },
+    "structuredData": {
+      "type": "json"
+    },
+    "metaViewport": {
+      "type": "string"
+    },
+    "canonicalURL": {
+      "type": "string"
+    }
+  }
+}

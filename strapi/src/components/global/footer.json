@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_global_footers",
+  "info": {
+    "displayName": "Footer",
+    "icon": "apps",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "tagline": {
+      "type": "text"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "email"
+    },
+    "contact_whatsapp": {
+      "type": "string"
+    },
+    "footer_columns": {
+      "type": "component",
+      "repeatable": true,
+      "component": "global.footer-column"
+    },
+    "social_media_links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    },
+    "copyright": {
+      "type": "string"
+    }
+  }
+}

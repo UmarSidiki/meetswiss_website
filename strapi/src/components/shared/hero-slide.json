@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_shared_hero_slides",
+  "info": {
+    "displayName": "Hero Slide",
+    "icon": "landscape",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "heading": {
+      "type": "string"
+    },
+    "paragraph": {
+      "type": "text"
+    }
+  }
+}

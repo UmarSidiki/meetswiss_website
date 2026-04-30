@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_shared_stat_items",
+  "info": {
+    "displayName": "Stat_Item",
+    "icon": "chartPie",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    }
+  }
+}

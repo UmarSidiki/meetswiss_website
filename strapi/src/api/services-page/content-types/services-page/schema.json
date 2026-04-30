@@ -1,0 +1,56 @@
+{
+  "kind": "singleType",
+  "collectionName": "services_pages",
+  "info": {
+    "singularName": "services-page",
+    "pluralName": "services-pages",
+    "displayName": "/services",
+    "description": "Content for the services listing page"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "sub_heading": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo"
+    },
+    "localizations": {
+      "writable": false,
+      "private": false,
+      "configurable": false,
+      "visible": false,
+      "useJoinTable": false,
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::services-page.services-page"
+    }
+  }
+}

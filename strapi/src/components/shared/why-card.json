@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_shared_why_cards",
+  "info": {
+    "displayName": "Why_Card",
+    "icon": "check",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "enumeration",
+      "enum": [
+        "shield",
+        "money",
+        "car",
+        "clock",
+        "star",
+        "users",
+        "luggage",
+        "leaf"
+      ],
+      "default": "shield"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}
