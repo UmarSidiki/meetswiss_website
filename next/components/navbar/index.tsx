@@ -317,10 +317,11 @@ export function Navbar({
       <aside
         id="mobile-nav-drawer"
         className={cn(
-          'fixed inset-y-0 right-0 z-[60] flex w-[min(88vw,23rem)] flex-col border-l border-amber-400/[0.07] bg-[linear-gradient(180deg,rgba(16,13,8,0.99)_0%,rgba(10,10,10,0.99)_100%)] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] shadow-[-24px_0_54px_rgba(0,0,0,0.6)] transition-transform duration-300 ease-out-quint lg:hidden',
+          'fixed inset-y-0 right-0 z-[60] flex w-[min(88vw,23rem)] flex-col border-l border-amber-400/[0.07] bg-[linear-gradient(180deg,rgba(16,13,8,0.99)_0%,rgba(10,10,10,0.99)_100%)] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] transition-shadow duration-300 ease-out-quint lg:hidden',
+          'transition-transform duration-300 ease-out-quint',
           mobileOpen
-            ? 'translate-x-0 pointer-events-auto'
-            : 'translate-x-full pointer-events-none'
+            ? 'translate-x-0 pointer-events-auto shadow-[-24px_0_54px_rgba(0,0,0,0.6)]'
+            : 'translate-x-full pointer-events-none shadow-none'
         )}
         aria-hidden={!mobileOpen}
       >

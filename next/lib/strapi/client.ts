@@ -20,12 +20,18 @@ const createClient = (
   config?: Omit<Config, 'baseURL'>,
   isDraftMode: boolean = false
 ) => {
+  const headers: Record<string, string> = {
+    'strapi-encode-source-maps': isDraftMode ? 'true' : 'false',
+    ...config?.headers as Record<string, string>,
+  };
+
+  if (process.env.STRAPI_API_TOKEN) {
+    headers['Authorization'] = `Bearer ${process.env.STRAPI_API_TOKEN}`;
+  }
+
   return strapi({
     baseURL: `${API_URL}/api`,
-    headers: {
-      'strapi-encode-source-maps': isDraftMode ? 'true' : 'false',
-      ...config?.headers,
-    },
+    headers,
     ...config,
   });
 };
@@ -72,19 +78,33 @@ async function findSingleTypeWithStatusFallback(
   try {
     return await client.find(query);
   } catch (error) {
+    const status = getHttpStatus(error);
+    
+    // Return empty data for 404s (e.g., missing translation)
+    if (status === 404) {
+      return { data: {} };
+    }
+
     // Some Strapi single-type endpoints reject the `status` query parameter.
     // Retry without it so localized globals still resolve in dev/prod.
-    if (status && getHttpStatus(error) === 400) {
+    if (status === 400 && query?.status) {
       const baseOptions = omitStatusParam(options);
       const fallbackOptions =
-        status === 'draft'
+        query.status === 'draft'
           ? ({
               ...baseOptions,
               publicationState: 'preview',
             } as API.BaseQueryParams)
           : baseOptions;
 
-      return client.find(fallbackOptions);
+      try {
+        return await client.find(fallbackOptions);
+      } catch (fallbackError) {
+        if (getHttpStatus(fallbackError) === 404) {
+          return { data: {} };
+        }
+        throw fallbackError;
+      }
     }
 
     throw error;
@@ -259,14 +279,21 @@ async function fetchDocumentCached<T = API.Document>(
   cacheLife('max');
   cacheTag(`document-${collectionName}-${documentId}`);
 
-  const { data } = await createClient(config)
-    .collection(collectionName)
-    .findOne(documentId, {
-      ...options,
-      status: 'published',
-    });
+  try {
+    const { data } = await createClient(config)
+      .collection(collectionName)
+      .findOne(documentId, {
+        ...options,
+        status: 'published',
+      });
 
-  return data as T;
+    return data as T;
+  } catch (error) {
+    if (getHttpStatus(error) === 404) {
+      return null as T;
+    }
+    throw error;
+  }
 }
 
 /**

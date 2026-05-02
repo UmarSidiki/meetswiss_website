@@ -49,10 +49,27 @@ const nextConfig = {
 
     let redirections = [];
     try {
+      const headers = {};
+      if (process.env.STRAPI_API_TOKEN) {
+        headers['Authorization'] = `Bearer ${process.env.STRAPI_API_TOKEN}`;
+      }
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/redirections`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/redirections`,
+        { headers }
       );
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const result = await res.json();
+      
+      if (!result.data) {
+        console.warn('[next.config] No data returned for redirects from Strapi.');
+        return [];
+      }
+
       const redirectItems = result.data.map(({ source, destination }) => {
         return {
           source: `/:locale${source}`,

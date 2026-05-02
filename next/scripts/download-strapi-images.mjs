@@ -62,12 +62,17 @@ async function fetchAllUploads() {
   let page = 1;
   let hasMore = true;
 
+  const headers = {};
+  if (process.env.STRAPI_API_TOKEN) {
+    headers['Authorization'] = `Bearer ${process.env.STRAPI_API_TOKEN}`;
+  }
+
   while (hasMore) {
     const url = `${API_URL}/api/upload/files?pagination[page]=${page}&pagination[pageSize]=${PAGE_SIZE}`;
 
     let res;
     try {
-      res = await fetch(url);
+      res = await fetch(url, { headers });
     } catch (err) {
       console.warn(
         `[download-images] Could not reach Strapi at ${API_URL}: ${err.message}`
@@ -82,7 +87,7 @@ async function fetchAllUploads() {
       // Try the alternative Strapi 5 upload API format
       const altUrl = `${API_URL}/api/upload/files?start=${(page - 1) * PAGE_SIZE}&limit=${PAGE_SIZE}`;
       try {
-        res = await fetch(altUrl);
+        res = await fetch(altUrl, { headers });
       } catch {
         console.warn(`[download-images] Upload API not available. Skipping.`);
         return allFiles;

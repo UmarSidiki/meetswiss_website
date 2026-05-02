@@ -37,12 +37,13 @@ export async function generateMetadata({
   params,
 }: PropsWithChildren<LocaleParamsProps>): Promise<Metadata> {
   const { locale } = await params;
-  const [pageData, seoSettings] = await Promise.all([
+  const [_pageData, seoSettings] = await Promise.all([
     fetchSingleType('global', { locale }),
     fetchSeoSettings(locale),
   ]);
+  const pageData = _pageData || {};
 
-  const metadata = generateMetadataObject(pageData.seo, {
+  const metadata = generateMetadataObject(pageData?.seo, {
     locale,
     pathname: '/',
     siteSettings: seoSettings,
@@ -84,10 +85,11 @@ export default async function LocaleLayout({
 }: PropsWithChildren<LocaleParamsProps>) {
   const { isEnabled: isDraftMode } = await draftMode();
   const { locale } = await params;
-  const [pageData, seoSettings] = await Promise.all([
+  const [_pageData, seoSettings] = await Promise.all([
     fetchSingleType('global', { locale }),
     fetchSeoSettings(locale),
   ]);
+  const pageData = _pageData || {};
   const isDemo = process.env.NEXT_IS_DEMO === 'true';
   const orgLogo = seoSettings.organizationLogo?.url;
   const orgLogoAbsolute = orgLogo ? strapiImage(orgLogo) : undefined;
@@ -110,7 +112,7 @@ export default async function LocaleLayout({
 
   return (
     <ViewTransitions>
-      <StructuredData data={[pageData.seo?.structuredData, organizationLd]} />
+      <StructuredData data={[pageData?.seo?.structuredData, organizationLd]} />
       <div
         className={cn(
           manrope.className,
@@ -120,13 +122,13 @@ export default async function LocaleLayout({
       >
         {isDemo && <Banner />}
         <Navbar
-          data={pageData.navbar}
+          data={pageData?.navbar}
           locale={locale}
           hasBanner={isDemo}
           logo={logoData}
         />
         {children}
-        <Footer data={pageData.footer} locale={locale} logo={logoData} />
+        <Footer data={pageData?.footer} locale={locale} logo={logoData} />
         <AIToast />
         {isDraftMode && <DraftModeBanner />}
       </div>

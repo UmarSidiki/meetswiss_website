@@ -70,7 +70,7 @@ export const Footer = async ({
   const basePath = locale === i18n.defaultLocale ? '' : `/${locale}`;
   const columns = data?.footer_columns ?? [];
   const socialLinks = data?.social_media_links ?? [];
-  const year = new Date().getFullYear();
+  const year = 2026;
   const copyright = data?.copyright ?? `© ${year} Meetswiss Transfers`;
 
   return (

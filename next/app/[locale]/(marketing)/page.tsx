@@ -111,6 +111,15 @@ function buildHomepageContent({
         cities?: TransferEntity[];
       }
     | undefined;
+  const ctaBlock = pageData.dynamic_zone?.find(
+    (item) => item?.__component === 'dynamic-zone.cta'
+  ) as
+    | {
+        heading?: string;
+        sub_heading?: string;
+        CTAs?: Array<{ text?: string; URL?: string; target?: string }>;
+      }
+    | undefined;
 
   const slidesRaw = heroBlock?.slides || [];
 
@@ -236,6 +245,8 @@ function buildHomepageContent({
         image: article.image?.url ? strapiImage(article.image.url) : '',
         slug: article.slug,
       })),
+    testimonialsHeading: testimonialsBlock?.heading || '',
+    testimonialsSubheading: testimonialsBlock?.sub_heading || '',
     testimonials:
       testimonialsBlock?.testimonials
         ?.filter((item: any) => Boolean(item?.text))
@@ -272,6 +283,18 @@ function buildHomepageContent({
             [step?.title, step?.description].filter(Boolean).join(' — ')
           )
           .filter((step: string) => Boolean(step)) || [],
+    },
+    cta: {
+      heading: ctaBlock?.heading || '',
+      subheading: ctaBlock?.sub_heading || '',
+      buttons:
+        ctaBlock?.CTAs
+          ?.filter((btn: any) => Boolean(btn?.text))
+          .map((btn: any) => ({
+            text: btn.text || '',
+            url: btn.URL || '#',
+            target: btn.target,
+          })) || [],
     },
   };
 }

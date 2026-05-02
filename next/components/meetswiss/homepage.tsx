@@ -6,12 +6,10 @@ import { Link } from 'next-view-transitions';
 import { useEffect, useRef, useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import {
-  FaApple,
   FaArrowLeft,
   FaArrowRight,
   FaCarSide,
   FaClock,
-  FaGooglePlay,
   FaLeaf,
   FaMoneyBillWave,
   FaPlus,
@@ -47,6 +45,8 @@ export type MeetswissHomepageContent = {
   }[];
   services: { title: string; image: string; slug: string }[];
   news: { title: string; image: string; slug: string }[];
+  testimonialsHeading: string;
+  testimonialsSubheading: string;
   testimonials: {
     name: string;
     role: string;
@@ -83,6 +83,11 @@ export type MeetswissHomepageContent = {
     }[];
   };
   howItWorks: { title: string; steps: string[] };
+  cta: {
+    heading: string;
+    subheading: string;
+    buttons: { text: string; url: string; target?: string }[];
+  };
 };
 
 const WHY_ICON_MAP: Record<string, React.ReactNode> = {
@@ -243,31 +248,7 @@ function CarouselControls({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Leaf SVG mark
-// ---------------------------------------------------------------------------
 
-function LeafMark({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      fill="none"
-    >
-      <path
-        d="M20 4C12.5 4 5.9 8.2 4 14.5C3.1 17.6 3.5 20.3 3.5 20.3C3.5 20.3 6.2 20.7 9.3 19.8C15.7 17.9 20 11.5 20 4Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-      />
-      <path
-        d="M8 16.5C10.4 13.8 13 11.7 16.6 9.4"
-        stroke="currentColor"
-        strokeWidth="1.4"
-      />
-    </svg>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Hero form embed (preserves iframe across re-renders)
@@ -659,38 +640,7 @@ function rotate(current: number, dir: 'next' | 'prev', max: number) {
   return current <= 0 ? max : current - 1;
 }
 
-// ---------------------------------------------------------------------------
-// Phone mockup used in app section
-// ---------------------------------------------------------------------------
 
-function PhoneMockup({ rotate }: { rotate: 'left' | 'right' }) {
-  return (
-    <div
-      className={clsx(
-        'absolute aspect-[10/19] w-[min(44vw,11.8rem)] rounded-[1.7rem] p-[0.58rem]',
-        'max-[760px]:w-[min(42vw,9.2rem)] max-[760px]:rounded-[1.4rem] max-[760px]:p-[0.5rem]',
-        'border border-amber-800/30 bg-gradient-to-br from-[#f9efe1] via-[#f5d9aa] to-[#ecd08f]',
-        'shadow-[0_22px_45px_rgba(61,45,14,0.2)]',
-        rotate === 'left'
-          ? 'left-4 top-16 -rotate-[10deg] max-[760px]:left-1/2 max-[760px]:top-10 max-[760px]:-translate-x-[58%]'
-          : 'right-[1.4rem] top-4 rotate-[13deg] max-[760px]:right-1/2 max-[760px]:top-2 max-[760px]:translate-x-[58%]'
-      )}
-    >
-      <div className="h-full w-full rounded-[1.2rem] bg-gradient-to-b from-[#fff8ef] to-[#f2e2c7] p-[0.78rem]">
-        <div className="h-[0.6rem] rounded-full bg-amber-400/45" />
-        <div className="mt-[0.44rem] h-[0.6rem] w-[62%] rounded-full bg-amber-400/45" />
-        <div
-          className={clsx(
-            'mt-4 h-[62%] rounded-[0.82rem]',
-            rotate === 'left'
-              ? 'bg-gradient-to-br from-[#1f2834] to-[#56708f]'
-              : 'bg-gradient-to-br from-[#121212] to-[#463418]'
-          )}
-        />
-      </div>
-    </div>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Main page component
@@ -715,6 +665,8 @@ export function MeetswissHomepage({
     hero,
     fleets,
     services,
+    testimonialsHeading,
+    testimonialsSubheading,
     testimonials,
     news,
     faqItems,
@@ -755,9 +707,9 @@ export function MeetswissHomepage({
   const currentHero = hero.slides[heroIndex];
   const cityParagraphs = cities.subheading
     ? cities.subheading
-        .split(/\n+/)
-        .map((paragraph) => paragraph.trim())
-        .filter(Boolean)
+      .split(/\n+/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean)
     : [];
 
   return (
@@ -766,7 +718,7 @@ export function MeetswissHomepage({
       {/* HERO                                                                 */}
       {/* ------------------------------------------------------------------ */}
       <section
-        className="relative flex min-h-screen items-end overflow-hidden max-[760px]:overflow-visible"
+        className="relative flex min-h-screen items-end overflow-hidden"
         id="home"
       >
         {/* Sliding backgrounds */}
@@ -1072,50 +1024,50 @@ export function MeetswissHomepage({
       {(cities.items.length > 0 ||
         cities.heading ||
         cityParagraphs.length > 0) && (
-        <section
-          className="bg-[#0b0b0b] py-[clamp(3rem,7vw,5.5rem)]"
-          id="cities"
-        >
-          <Container>
-            <div className="flex items-center justify-between gap-4 max-[760px]:flex-wrap">
-              {cities.heading && <SectionTitle>{cities.heading}</SectionTitle>}
-              {cities.items.length > 0 && (
-                <Link
-                  href={`${basePath}/transfers`}
-                  className="inline-flex items-center gap-2 font-bold text-amber-400 no-underline hover:underline hover:decoration-1 hover:underline-offset-[0.26rem]"
-                >
-                  View all destinations <FaArrowRight />
-                </Link>
-              )}
-            </div>
-
-            {cityParagraphs.length > 0 && (
-              <div className="mt-3 grid max-w-[60ch] gap-3 text-[#e2dbc9]">
-                {cityParagraphs.map((paragraph, index) => (
-                  <p
-                    key={`${paragraph.slice(0, 16)}-${index}`}
-                    className="m-0 leading-[1.7]"
+          <section
+            className="bg-[#0b0b0b] py-[clamp(3rem,7vw,5.5rem)]"
+            id="cities"
+          >
+            <Container>
+              <div className="flex items-center justify-between gap-4 max-[760px]:flex-wrap">
+                {cities.heading && <SectionTitle>{cities.heading}</SectionTitle>}
+                {cities.items.length > 0 && (
+                  <Link
+                    href={`${basePath}/transfers`}
+                    className="inline-flex items-center gap-2 font-bold text-amber-400 no-underline hover:underline hover:decoration-1 hover:underline-offset-[0.26rem]"
                   >
-                    {paragraph}
-                  </p>
-                ))}
+                    View all destinations <FaArrowRight />
+                  </Link>
+                )}
               </div>
-            )}
 
-            {cities.items.length > 0 && (
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {cities.items.slice(0, 6).map((city) => (
-                  <CityCard
-                    key={city.slug}
-                    city={city}
-                    href={`${basePath}/transfers/${city.slug}`}
-                  />
-                ))}
-              </div>
-            )}
-          </Container>
-        </section>
-      )}
+              {cityParagraphs.length > 0 && (
+                <div className="mt-3 grid max-w-[60ch] gap-3 text-[#e2dbc9]">
+                  {cityParagraphs.map((paragraph, index) => (
+                    <p
+                      key={`${paragraph.slice(0, 16)}-${index}`}
+                      className="m-0 leading-[1.7]"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {cities.items.length > 0 && (
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {cities.items.slice(0, 6).map((city) => (
+                    <CityCard
+                      key={city.slug}
+                      city={city}
+                      href={`${basePath}/transfers/${city.slug}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </Container>
+          </section>
+        )}
 
       {/* ------------------------------------------------------------------ */}
       {/* SERVICES                                                             */}
@@ -1170,45 +1122,84 @@ export function MeetswissHomepage({
       {/* TESTIMONIALS                                                         */}
       {/* ------------------------------------------------------------------ */}
       {testimonials.length > 0 && (
-        <section className="bg-[#0a0a0a] py-[clamp(3rem,7vw,5.5rem)]">
+        <section className="bg-[#0a0a0a] py-[clamp(4rem,9vw,7rem)]">
           <Container>
-            <div className="grid items-stretch gap-[clamp(1rem,3vw,2.2rem)] [grid-template-columns:1.1fr_0.9fr] max-lg:grid-cols-1">
-              {/* Review card */}
-              <article
-                className={clsx(
-                  'rounded-2xl border border-amber-400/35 bg-[#111] p-[1.2rem]',
-                  'transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
-                  'hover:-translate-y-1 hover:border-amber-400/55 hover:shadow-[0_18px_36px_rgba(0,0,0,0.33)]'
-                )}
-              >
-                <div className="flex items-center gap-[0.84rem]">
-                  <div
-                    className="h-[2.9rem] w-[2.9rem] rounded-full border border-amber-400/45 bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${testimonials[testimonialIndex]?.avatar})`,
-                    }}
-                  />
-                  <div>
-                    <h3 className="m-0 text-[1.04rem]">
-                      {testimonials[testimonialIndex]?.name}
-                    </h3>
-                    <span className="text-[0.9rem] text-[#b6a88a]">
-                      {testimonials[testimonialIndex]?.role}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex items-center gap-1 text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} />
-                  ))}
-                </div>
-
-                <p className="mt-[0.95rem] leading-[1.68] text-[#e1d8c4]">
-                  {testimonials[testimonialIndex]?.review}
+            <div className="grid items-start gap-[clamp(2.5rem,6vw,5rem)] [grid-template-columns:0.85fr_1.15fr] max-lg:grid-cols-1">
+              {/* Left — heading & subheading */}
+              <div className="max-lg:max-w-[36rem]">
+                <p className="m-0 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-amber-400/70">
+                  Testimonials
                 </p>
 
-                <div className="mt-4">
+                {testimonialsHeading && (
+                  <h2 className="mt-4 text-[clamp(2rem,3.8vw,3.4rem)] leading-[1.06] tracking-[0.005em] text-[#f5efe0] [font-family:var(--font-luxury,Bodoni_Moda,Times_New_Roman,serif)]">
+                    {testimonialsHeading}
+                  </h2>
+                )}
+
+                {testimonialsSubheading && (
+                  <p className="mt-5 max-w-[38ch] text-[0.92rem] leading-[1.75] text-[#9e9482]">
+                    {testimonialsSubheading}
+                  </p>
+                )}
+              </div>
+
+              {/* Right — testimonial card + controls */}
+              <div>
+                <article className="relative overflow-hidden rounded-[1.1rem] border border-[#1f1c16] bg-[#0f0e0c] p-[clamp(1.5rem,3vw,2.2rem)]">
+                  {/* Subtle top-edge warm glow */}
+                  <div
+                    className="pointer-events-none absolute inset-x-0 top-0 h-px"
+                    style={{
+                      background:
+                        'linear-gradient(90deg, transparent, rgba(212,168,67,0.25) 30%, rgba(212,168,67,0.35) 50%, rgba(212,168,67,0.25) 70%, transparent)',
+                    }}
+                  />
+
+                  {/* Quote mark — proper SVG, not a broken HTML entity */}
+                  <svg
+                    className="mb-4 h-7 w-7 text-amber-400/40"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5 3.871 3.871 0 01-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5 3.871 3.871 0 01-2.748-1.179z" />
+                  </svg>
+
+                  <p className="m-0 text-[1.02rem] leading-[1.78] text-[#ddd5c3]">
+                    {testimonials[testimonialIndex]?.review}
+                  </p>
+
+                  {/* Author row */}
+                  <div className="mt-7 flex items-center gap-3.5">
+                    {testimonials[testimonialIndex]?.avatar && (
+                      <div
+                        className="h-10 w-10 shrink-0 rounded-full bg-[#1a1816] bg-cover bg-center ring-1 ring-amber-400/15"
+                        style={{
+                          backgroundImage: `url(${testimonials[testimonialIndex].avatar})`,
+                        }}
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="m-0 truncate text-[0.9rem] font-semibold text-[#f5efe0]">
+                        {testimonials[testimonialIndex]?.name}
+                      </p>
+                      {testimonials[testimonialIndex]?.role && (
+                        <p className="m-0 mt-px truncate text-[0.8rem] text-[#8a7f6d]">
+                          {testimonials[testimonialIndex].role}
+                        </p>
+                      )}
+                    </div>
+                    <div className="ml-auto flex shrink-0 items-center gap-[2px] text-amber-400/80">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar key={i} className="text-[0.6rem]" />
+                      ))}
+                    </div>
+                  </div>
+                </article>
+
+                {/* Navigation — always below the card */}
+                <div className="mt-5">
                   <CarouselControls
                     onPrev={() =>
                       setTestimonialIndex((c) =>
@@ -1225,14 +1216,6 @@ export function MeetswissHomepage({
                     onDot={setTestimonialIndex}
                   />
                 </div>
-              </article>
-
-              {/* Brand panel */}
-              <div className="grid place-content-center gap-3 rounded-2xl border border-amber-400/25 bg-[radial-gradient(circle_at_20%_20%,rgba(212,168,67,0.2),rgba(8,8,8,0.95)_55%)] p-[1.3rem] text-center max-lg:min-h-40">
-                <LeafMark className="mx-auto h-12 w-12 text-amber-400" />
-                <p className="m-0 text-[clamp(1.75rem,4vw,3.2rem)] tracking-[0.01em] text-[#f7f2e4] [font-family:var(--font-luxury,Bodoni_Moda,Times_New_Roman,serif)]">
-                  meetswiss transfers
-                </p>
               </div>
             </div>
           </Container>
@@ -1390,50 +1373,139 @@ export function MeetswissHomepage({
       )}
 
       {/* ------------------------------------------------------------------ */}
-      {/* APP DOWNLOAD                                                         */}
+      {/* CTA                                                                  */}
       {/* ------------------------------------------------------------------ */}
-      <section className="bg-[#f5efe0] py-[clamp(3rem,7vw,5rem)] text-[#16130f]">
-        <Container>
-          <div className="grid grid-cols-2 items-center gap-[clamp(1rem,3vw,2.4rem)] max-lg:grid-cols-1">
-            <div>
-              <SectionTitle>Best Private Transfer Company</SectionTitle>
-              <p className="mt-[0.95rem] leading-[1.7] text-[#3c3327]">
-                Download our app to get the best private transfer service you
-                can find around today.
-              </p>
-              <div className="mt-[1.2rem] flex flex-wrap gap-[0.62rem]">
-                {[
-                  { icon: <FaGooglePlay />, label: 'Google Play' },
-                  { icon: <FaApple />, label: 'App Store' },
-                ].map(({ icon, label }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    className={clsx(
-                      'inline-flex items-center gap-[0.45rem] rounded-full border border-[rgba(22,19,15,0.18)]',
-                      'bg-[#fbf7ef] px-[0.95rem] py-[0.66rem] font-bold',
-                      'transition-[border-color,transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
-                      'hover:-translate-y-px hover:border-amber-400/75 hover:shadow-[0_12px_24px_rgba(170,127,34,0.18)]'
-                    )}
-                  >
-                    {icon} {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+      {(content.cta.heading || content.cta.subheading || content.cta.buttons.length > 0) && (
+        <section className="relative overflow-hidden bg-[#f5efe0] py-[clamp(3rem,6vw,4.5rem)]">
+          {/* Decorative corner accent — top-right warm gradient */}
+          <div
+            className="pointer-events-none absolute -right-16 -top-16 h-[22rem] w-[22rem] rounded-full opacity-30 max-lg:hidden"
+            style={{
+              background: 'radial-gradient(circle, rgba(190,145,53,0.25) 0%, rgba(212,168,67,0.08) 40%, transparent 70%)',
+            }}
+          />
 
-            {/* Phone mockup cluster */}
-            <div className="relative isolate min-h-[19rem] overflow-hidden max-lg:min-h-[17rem] max-[760px]:min-h-[16rem]">
-              <PhoneMockup rotate="right" />
-              <PhoneMockup rotate="left" />
-              <div className="absolute bottom-[0.9rem] right-0 inline-flex items-center gap-[0.44rem] rounded-full border border-amber-400/45 bg-[#131313] px-[0.72rem] py-[0.45rem] text-[#f5efe0] max-[760px]:left-1/2 max-[760px]:right-auto max-[760px]:-translate-x-1/2">
-                <LeafMark className="h-[1.2rem] w-[1.2rem] text-amber-400" />
-                <span>Meetswiss App</span>
+          <Container>
+            <div className="grid items-center gap-[clamp(1.5rem,4vw,3rem)] [grid-template-columns:1.1fr_0.9fr] max-lg:grid-cols-1">
+              {/* Left — content */}
+              <div className="max-lg:flex max-lg:flex-col max-lg:items-center max-lg:text-center">
+                <p className="m-0 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[#8a7a5e]">
+                  Get Started
+                </p>
+
+                {content.cta.heading && (
+                  <h2 className="mt-3 max-w-[16ch] text-[clamp(2rem,4vw,3.4rem)] leading-[1.08] tracking-[0.005em] text-[#1a1610] [font-family:var(--font-luxury,Bodoni_Moda,Times_New_Roman,serif)]">
+                    {content.cta.heading}
+                  </h2>
+                )}
+
+                {content.cta.subheading && (
+                  <p className="mt-3 max-w-[44ch] text-[0.95rem] leading-[1.72] text-[#5c5243]">
+                    {content.cta.subheading}
+                  </p>
+                )}
+
+                {content.cta.buttons.length > 0 && (
+                  <div className="mt-6 flex flex-wrap gap-3 max-lg:justify-center">
+                    {content.cta.buttons.map((btn, i) => (
+                      <Link
+                        key={`${btn.text}-${i}`}
+                        href={btn.url}
+                        target={btn.target}
+                        className={clsx(
+                          'inline-flex items-center justify-center rounded-full px-7 py-3 text-[0.9rem] font-bold no-underline',
+                          'transition-[transform,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8a7a5e]/50',
+                          i === 0
+                            ? 'bg-[#1a1610] text-[#f5efe0] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(26,22,16,0.25)]'
+                            : 'border border-[#1a1610]/20 bg-transparent text-[#1a1610] hover:border-[#1a1610]/50 hover:-translate-y-0.5'
+                        )}
+                      >
+                        {btn.text}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right — phone mockups */}
+              <div className="relative flex min-h-[22rem] items-center justify-center max-lg:mt-4 max-lg:min-h-[20rem] max-sm:min-h-[15rem]" aria-hidden="true">
+                <div className="relative flex h-full w-full max-w-[20rem] items-center justify-center">
+                  {/* iPhone mockup — front */}
+                  <div className="absolute z-20 aspect-[9/19.5] w-[10.5rem] -translate-x-6 -rotate-6 max-lg:w-[9.5rem] max-sm:w-[7.5rem] max-sm:-translate-x-4">
+                    {/* Device frame */}
+                    <div className="relative h-full w-full rounded-[2.2rem] border-[2.5px] border-[#1a1610] bg-[#1a1610] p-[3px] shadow-[0_25px_60px_rgba(26,22,16,0.3),0_8px_20px_rgba(26,22,16,0.15)] max-sm:rounded-[1.8rem] max-sm:border-[2px]">
+                      {/* Screen */}
+                      <div className="relative h-full w-full overflow-hidden rounded-[1.9rem] bg-[#0e0d0b] max-sm:rounded-[1.5rem]">
+                        {/* Dynamic Island */}
+                        <div className="mx-auto mt-[0.55rem] h-[1.1rem] w-[5.5rem] rounded-full bg-[#1a1610] max-sm:mt-[0.4rem] max-sm:h-[0.85rem] max-sm:w-[4rem]" />
+
+                        {/* Screen content — Meetswiss UI skeleton */}
+                        <div className="px-3 pt-5 max-sm:pt-3">
+                          <div className="h-[0.35rem] w-[55%] rounded-full bg-amber-400/35 max-sm:h-[0.25rem]" />
+                          <div className="mt-2 h-[0.35rem] w-[80%] rounded-full bg-[#f5efe0]/12 max-sm:mt-1.5 max-sm:h-[0.25rem]" />
+                          <div className="mt-1.5 h-[0.35rem] w-[65%] rounded-full bg-[#f5efe0]/08 max-sm:mt-1 max-sm:h-[0.25rem]" />
+
+                          {/* Card skeleton */}
+                          <div className="mt-4 rounded-xl border border-amber-400/15 bg-[#161410] p-2.5 max-sm:mt-3 max-sm:rounded-lg max-sm:p-1.5">
+                            <div className="h-[3.5rem] rounded-lg bg-gradient-to-br from-[#1f1c14] to-[#13120e] max-sm:h-[2.5rem]" />
+                            <div className="mt-2 h-[0.3rem] w-[70%] rounded-full bg-[#f5efe0]/15 max-sm:h-[0.2rem]" />
+                            <div className="mt-1 h-[0.3rem] w-[50%] rounded-full bg-[#f5efe0]/08 max-sm:h-[0.2rem]" />
+                          </div>
+
+                          {/* Button skeleton */}
+                          <div className="mx-auto mt-4 h-[2rem] w-[75%] rounded-full bg-gradient-to-r from-[#c9a54e] to-[#d4a843] opacity-60 max-sm:mt-3 max-sm:h-[1.5rem]" />
+                        </div>
+
+                        {/* Bottom bar */}
+                        <div className="absolute bottom-2 left-1/2 h-[0.22rem] w-[30%] -translate-x-1/2 rounded-full bg-[#f5efe0]/20" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Android mockup — behind, offset right */}
+                  <div className="absolute z-10 aspect-[9/19] w-[10rem] translate-x-8 translate-y-2 rotate-6 max-lg:w-[9rem] max-sm:w-[7rem] max-sm:translate-x-6 max-sm:translate-y-1">
+                    {/* Device frame */}
+                    <div className="relative h-full w-full rounded-[1.6rem] border-[2px] border-[#2a2620] bg-[#2a2620] p-[2.5px] shadow-[0_20px_50px_rgba(26,22,16,0.25)] max-sm:rounded-[1.3rem] max-sm:border-[1.5px]">
+                      {/* Screen */}
+                      <div className="relative h-full w-full overflow-hidden rounded-[1.35rem] bg-[#111010] max-sm:rounded-[1.1rem]">
+                        {/* Camera hole-punch */}
+                        <div className="mx-auto mt-[0.5rem] h-[0.5rem] w-[0.5rem] rounded-full bg-[#1e1c18] ring-1 ring-[#2a2620] max-sm:h-[0.4rem] max-sm:w-[0.4rem]" />
+
+                        {/* Screen content */}
+                        <div className="px-2.5 pt-4 max-sm:pt-2.5">
+                          <div className="h-[0.3rem] w-[60%] rounded-full bg-amber-400/25 max-sm:h-[0.2rem]" />
+                          <div className="mt-2 h-[0.3rem] w-[75%] rounded-full bg-[#f5efe0]/10 max-sm:mt-1.5 max-sm:h-[0.2rem]" />
+                          <div className="mt-1 h-[0.3rem] w-[55%] rounded-full bg-[#f5efe0]/06 max-sm:mt-1 max-sm:h-[0.2rem]" />
+
+                          {/* Map-like rectangle */}
+                          <div className="mt-3 h-[5rem] overflow-hidden rounded-lg bg-gradient-to-br from-[#1a1814] to-[#0f0e0c] max-sm:mt-2.5 max-sm:h-[3.5rem] max-sm:rounded-md">
+                            {/* Road lines */}
+                            <div className="absolute left-[30%] top-[45%] h-px w-[40%] rotate-12 bg-amber-400/15" />
+                            <div className="absolute left-[20%] top-[55%] h-px w-[35%] -rotate-6 bg-[#f5efe0]/10" />
+                          </div>
+
+                          <div className="mt-3 flex gap-1.5 max-sm:mt-2.5">
+                            <div className="h-[1.6rem] flex-1 rounded-md bg-[#1a1814] max-sm:h-[1.2rem]" />
+                            <div className="h-[1.6rem] flex-1 rounded-md bg-[#1a1814] max-sm:h-[1.2rem]" />
+                          </div>
+                        </div>
+
+                        {/* Android nav bar */}
+                        <div className="absolute bottom-1.5 left-1/2 flex -translate-x-1/2 gap-4 max-sm:gap-3">
+                          <div className="h-[0.22rem] w-3 rounded-full bg-[#f5efe0]/15 max-sm:h-[0.15rem] max-sm:w-2" />
+                          <div className="h-[0.22rem] w-[0.22rem] rounded-full bg-[#f5efe0]/10 max-sm:h-[0.15rem] max-sm:w-[0.15rem]" />
+                          <div className="h-[0.22rem] w-3 rounded-full bg-[#f5efe0]/10 max-sm:h-[0.15rem] max-sm:w-2" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </Container>
-      </section>
+          </Container>
+        </section>
+      )}
     </main>
   );
 }
