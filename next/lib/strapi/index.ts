@@ -1,4 +1,5 @@
 export {
+  fetchCollectionAllLocales,
   fetchCollectionType,
   fetchSingleType,
   fetchDocument,

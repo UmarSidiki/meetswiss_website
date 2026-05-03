@@ -7,15 +7,14 @@ import { i18n } from '@/i18n.config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import PageContent from '@/lib/shared/PageContent';
 import { generateMetadataObject } from '@/lib/shared/metadata';
-import { fetchCollectionType } from '@/lib/strapi';
+import { fetchCollectionAllLocales, fetchCollectionType } from '@/lib/strapi';
 import type { LocaleSlugParamsProps } from '@/types/types';
 
 export async function generateStaticParams() {
-  const pages = await fetchCollectionType<
+  const pages = await fetchCollectionAllLocales<
     Array<{ slug: string; locale: string }>
   >('pages', {
     fields: ['slug', 'locale'],
-    locale: 'all',
     pagination: { pageSize: 1000 },
   });
 

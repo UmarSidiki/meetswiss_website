@@ -9,16 +9,15 @@ import { StructuredData } from '@/components/seo/structured-data';
 import { i18n } from '@/i18n.config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
-import { fetchCollectionType } from '@/lib/strapi';
+import { fetchCollectionAllLocales, fetchCollectionType } from '@/lib/strapi';
 import { strapiImage } from '@/lib/strapi/strapiImage';
 import type { Article, LocaleSlugParamsProps } from '@/types/types';
 
 export async function generateStaticParams() {
-  const articles = await fetchCollectionType<
+  const articles = await fetchCollectionAllLocales<
     Array<{ slug: string; locale: string }>
   >('articles', {
     fields: ['slug', 'locale'],
-    locale: 'all',
     pagination: { pageSize: 1000 },
   });
 

@@ -3,6 +3,8 @@ import type { API, Config } from '@strapi/client';
 import { cacheLife, cacheTag, revalidateTag } from 'next/cache';
 import { draftMode } from 'next/headers';
 
+import { i18n } from '@/i18n.config';
+
 import { API_URL } from '../utils';
 
 export class StrapiError extends Error {
@@ -111,6 +113,66 @@ async function findSingleTypeWithStatusFallback(
   }
 }
 
+async function findCollectionWithStatusFallback(
+  collectionName: string,
+  options?: API.BaseQueryParams,
+  config?: Omit<Config, 'baseURL'>,
+  status?: 'draft' | 'published',
+  isDraftMode: boolean = false
+) {
+  const client = createClient(config, isDraftMode).collection(collectionName);
+  const query = status
+    ? ({ ...options, status } as API.BaseQueryParams)
+    : options;
+
+  try {
+    return await client.find(query);
+  } catch (error) {
+    const httpStatus = getHttpStatus(error);
+    
+    if (httpStatus === 404) {
+      return { data: [] };
+    }
+
+    if (httpStatus === 400 && query?.status) {
+      const baseOptions = omitStatusParam(options);
+      const fallbackOptions =
+        query.status === 'draft'
+          ? ({
+              ...baseOptions,
+              publicationState: 'preview',
+            } as API.BaseQueryParams)
+          : baseOptions;
+
+      try {
+        return await client.find(fallbackOptions);
+      } catch (fallbackError) {
+        const fallbackStatus = getHttpStatus(fallbackError);
+        if (fallbackStatus === 404) {
+          return { data: [] };
+        }
+        
+        // If it still fails with 400, it might be the `locale` parameter causing issues for non-localized collections
+        if (fallbackStatus === 400 && fallbackOptions?.locale) {
+          const { locale, ...noLocaleOptions } = fallbackOptions as any;
+          try {
+            return await client.find(noLocaleOptions);
+          } catch (noLocaleError) {
+             if (getHttpStatus(noLocaleError) === 404) {
+               return { data: [] };
+             }
+             throw noLocaleError;
+          }
+        }
+        
+        throw fallbackError;
+      }
+    }
+
+    throw error;
+  }
+}
+
 async function isDraftModeEnabled(): Promise<boolean> {
   // In development or during static generation, skip draft mode check
   if (process.env.ENVIRONMENT === 'development') {
@@ -136,14 +198,14 @@ async function fetchCollectionCached<T = API.Document[]>(
 ): Promise<T> {
   'use cache';
   cacheLife('max');
-  cacheTag(`collection-${collectionName}`);
+  cacheTag(`v2-collection-${collectionName}`);
 
-  const { data } = await createClient(config)
-    .collection(collectionName)
-    .find({
-      ...options,
-      status: 'published',
-    });
+  const { data } = await findCollectionWithStatusFallback(
+    collectionName,
+    options,
+    config,
+    'published'
+  );
 
   return data as T;
 }
@@ -164,37 +226,61 @@ export async function fetchCollectionType<T = API.Document[]>(
   try {
     // Bypass cache in draft mode for real-time preview
     if (isDraftMode) {
-      const { data } = await createClient(config, true)
-        .collection(collectionName)
-        .find({
-          ...options,
-          status: 'draft',
-        });
+      const { data } = await findCollectionWithStatusFallback(
+        collectionName,
+        options,
+        config,
+        'draft',
+        true
+      );
       return data as T;
     }
 
     // Bypass cache in development mode
     if (process.env.ENVIRONMENT === 'development') {
-      const { data } = await createClient(config)
-        .collection(collectionName)
-        .find({
-          ...options,
-          status: 'published',
-        });
+      const { data } = await findCollectionWithStatusFallback(
+        collectionName,
+        options,
+        config,
+        'published'
+      );
       return data as T;
     }
 
     // Use cached version for published content
     return fetchCollectionCached<T>(collectionName, options, config);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error(
-        `[Strapi] Failed to fetch collection "${collectionName}":`,
-        error
-      );
-    }
+    // Always log errors to help debug production issues where sitemaps return empty
+    console.error(
+      `[Strapi] Failed to fetch collection "${collectionName}":`,
+      error instanceof Error ? error.message : error
+    );
     return [] as unknown as T;
   }
+}
+
+/**
+ * Fetches all locales in parallel and merges results.
+ *
+ * Strapi public API often returns empty data or 403 for `locale: 'all'` depending on
+ * permissions; per-locale queries match what the Public role allows.
+ */
+export async function fetchCollectionAllLocales<T = API.Document[]>(
+  collectionName: string,
+  options?: Omit<API.BaseQueryParams, 'locale'>,
+  config?: Omit<Config, 'baseURL'>
+): Promise<T> {
+  const batches = await Promise.all(
+    i18n.locales.map((locale) =>
+      fetchCollectionType<API.Document[]>(
+        collectionName,
+        { ...options, locale } as API.BaseQueryParams,
+        config
+      )
+    )
+  );
+
+  return batches.flat() as T;
 }
 
 /**
@@ -207,7 +293,7 @@ async function fetchSingleCached<T = API.Document>(
 ): Promise<T> {
   'use cache';
   cacheLife('max');
-  cacheTag(`single-${singleTypeName}`);
+  cacheTag(`v2-single-${singleTypeName}`);
 
   const { data } = await findSingleTypeWithStatusFallback(
     singleTypeName,
@@ -256,12 +342,10 @@ export async function fetchSingleType<T = API.Document>(
 
     return fetchSingleCached<T>(singleTypeName, options, config);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error(
-        `[Strapi] Failed to fetch single type "${singleTypeName}":`,
-        error
-      );
-    }
+    console.error(
+      `[Strapi] Failed to fetch single type "${singleTypeName}":`,
+      error instanceof Error ? error.message : error
+    );
     return {} as unknown as T;
   }
 }
@@ -277,7 +361,7 @@ async function fetchDocumentCached<T = API.Document>(
 ): Promise<T> {
   'use cache';
   cacheLife('max');
-  cacheTag(`document-${collectionName}-${documentId}`);
+  cacheTag(`v2-document-${collectionName}-${documentId}`);
 
   try {
     const { data } = await createClient(config)
@@ -366,14 +450,14 @@ export function revalidateContent(
   // This serves stale content while fetching fresh data in background
   switch (type) {
     case 'collection':
-      revalidateTag(`collection-${contentType}`, 'max');
+      revalidateTag(`v2-collection-${contentType}`, 'max');
       break;
     case 'single':
-      revalidateTag(`single-${contentType}`, 'max');
+      revalidateTag(`v2-single-${contentType}`, 'max');
       break;
     case 'document':
       if (documentId) {
-        revalidateTag(`document-${contentType}-${documentId}`, 'max');
+        revalidateTag(`v2-document-${contentType}-${documentId}`, 'max');
       }
       break;
   }

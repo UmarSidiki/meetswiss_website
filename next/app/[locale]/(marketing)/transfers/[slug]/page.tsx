@@ -17,7 +17,7 @@ import { i18n } from '@/i18n.config';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
-import { fetchCollectionType } from '@/lib/strapi';
+import { fetchCollectionAllLocales, fetchCollectionType } from '@/lib/strapi';
 import type { LocaleSlugParamsProps } from '@/types/types';
 
 type Transfer = {
@@ -37,11 +37,10 @@ type Transfer = {
 };
 
 export async function generateStaticParams() {
-  const transfers = await fetchCollectionType<
+  const transfers = await fetchCollectionAllLocales<
     Array<{ slug: string; locale: string }>
   >('transfers', {
     fields: ['slug', 'locale'],
-    locale: 'all',
     pagination: { pageSize: 1000 },
   });
 

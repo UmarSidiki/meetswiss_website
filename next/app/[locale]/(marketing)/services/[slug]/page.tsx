@@ -13,15 +13,14 @@ import { i18n } from '@/i18n.config';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
-import { fetchCollectionType } from '@/lib/strapi';
+import { fetchCollectionAllLocales, fetchCollectionType } from '@/lib/strapi';
 import type { LocaleSlugParamsProps } from '@/types/types';
 
 export async function generateStaticParams() {
-  const services = await fetchCollectionType<
+  const services = await fetchCollectionAllLocales<
     Array<{ slug: string; locale: string }>
   >('services', {
     fields: ['slug', 'locale'],
-    locale: 'all',
     pagination: { pageSize: 1000 },
   });
 
