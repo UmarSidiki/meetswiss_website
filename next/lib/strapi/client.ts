@@ -248,7 +248,7 @@ export async function fetchCollectionType<T = API.Document[]>(
     }
 
     // Use cached version for published content
-    return fetchCollectionCached<T>(collectionName, options, config);
+    return await fetchCollectionCached<T>(collectionName, options, config);
   } catch (error) {
     // Always log errors to help debug production issues where sitemaps return empty
     console.error(
@@ -340,7 +340,7 @@ export async function fetchSingleType<T = API.Document>(
       return data as T;
     }
 
-    return fetchSingleCached<T>(singleTypeName, options, config);
+    return await fetchSingleCached<T>(singleTypeName, options, config);
   } catch (error) {
     console.error(
       `[Strapi] Failed to fetch single type "${singleTypeName}":`,
@@ -415,7 +415,7 @@ export async function fetchDocument<T = API.Document>(
       return data as T;
     }
 
-    return fetchDocumentCached<T>(collectionName, documentId, options, config);
+    return await fetchDocumentCached<T>(collectionName, documentId, options, config);
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.error(

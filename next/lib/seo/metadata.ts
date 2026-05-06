@@ -29,7 +29,7 @@ function normalizeKeywords(keywords?: string | string[]): string[] | undefined {
 
 function resolveRobots(robotsInput?: string): Metadata['robots'] | undefined {
   if (!robotsInput) {
-    return undefined;
+    return { index: true, follow: true };
   }
 
   const directives = robotsInput
@@ -38,7 +38,7 @@ function resolveRobots(robotsInput?: string): Metadata['robots'] | undefined {
     .filter(Boolean);
 
   if (!directives.length) {
-    return undefined;
+    return { index: true, follow: true };
   }
 
   const robots: NonNullable<Metadata['robots']> = {
@@ -59,13 +59,13 @@ function resolveRobots(robotsInput?: string): Metadata['robots'] | undefined {
     robots.notranslate = true;
   }
   if (directives.includes('max-image-preview:large')) {
-    robots['max-image-preview'] = 'large';
+    robots.maxImagePreview = 'large';
   }
   if (directives.includes('max-image-preview:standard')) {
-    robots['max-image-preview'] = 'standard';
+    robots.maxImagePreview = 'standard';
   }
   if (directives.includes('max-image-preview:none')) {
-    robots['max-image-preview'] = 'none';
+    robots.maxImagePreview = 'none';
   }
 
   return robots;
@@ -95,27 +95,17 @@ function resolveDefaultImage(siteSettings?: any): string | undefined {
 function resolveCanonicalPath({
   locale,
   pathname,
-  canonicalURL,
 }: {
   locale: string;
   pathname?: string;
-  canonicalURL?: string;
 }): string {
-  if (canonicalURL) {
-    if (/^https?:\/\//i.test(canonicalURL)) {
-      return canonicalURL;
-    }
-    const normalizedCanonical = canonicalURL.startsWith('/')
-      ? canonicalURL
-      : `/${canonicalURL}`;
-    return getAbsoluteUrl(normalizedCanonical);
-  }
-
   const cleanPath = pathname && pathname !== '/' ? pathname : '';
+  if (locale === defaultLocale) {
+    return getAbsoluteUrl(cleanPath);
+  }
   const localePath = cleanPath
     ? `/${locale}${cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`}`
     : `/${locale}`;
-
   return getAbsoluteUrl(localePath);
 }
 
@@ -156,11 +146,7 @@ export function generateMetadataObject(
   const openGraphDescription = seo?.ogDescription || description;
   const twitterTitle = seo?.twitterTitle || title;
   const twitterDescription = seo?.twitterDescription || description;
-  const canonical = resolveCanonicalPath({
-    locale,
-    pathname,
-    canonicalURL: seo?.canonicalURL,
-  });
+  const canonical = resolveCanonicalPath({ locale, pathname });
   const metadataImage =
     resolveMetadataImage(seo) || resolveDefaultImage(options.siteSettings);
   const languageAlternates = options.localizedPaths
@@ -172,7 +158,10 @@ export function generateMetadataObject(
                 ? value
                 : `/${value}`
               : '';
-          acc[language] = getAbsoluteUrl(`/${language}${localizedPath}`);
+          acc[language] =
+            language === defaultLocale
+              ? getAbsoluteUrl(localizedPath)
+              : getAbsoluteUrl(`/${language}${localizedPath}`);
           return acc;
         },
         {}

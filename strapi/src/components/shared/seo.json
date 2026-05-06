@@ -63,9 +63,6 @@
     },
     "metaViewport": {
       "type": "string"
-    },
-    "canonicalURL": {
-      "type": "string"
     }
   }
 }

@@ -28,6 +28,7 @@ const populate = {
   },
   defaultSocialImage: true,
   organizationLogo: true,
+  favicon: true,
 };
 
 export default (config, { strapi }: { strapi: Core.Strapi }) => {

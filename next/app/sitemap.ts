@@ -5,7 +5,7 @@ import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchCollectionAllLocales } from '@/lib/strapi';
 
 /** Pick up new Strapi URLs periodically (webhooks also revalidate this path). */
-export const revalidate = 3600;
+/** Sitemap is automatically revalidated via ISR cache tags in Strapi client */
 
 type LocalizedEntity = {
   documentId?: string | null;
@@ -46,6 +46,11 @@ function groupByIdentity(entities: LocalizedEntity[]) {
   return grouped;
 }
 
+function localePath(locale: string, path: string): string {
+  const prefix = locale === i18n.defaultLocale ? '' : `/${locale}`;
+  return `${prefix}${path}`;
+}
+
 /** One `<url>` per localized path — avoids `xhtml:link` / `alternates` in generated XML. */
 function entriesFromLocalizedGroups(
   entities: LocalizedEntity[],
@@ -63,7 +68,9 @@ function entriesFromLocalizedGroups(
 
       out.push({
         url: getAbsoluteUrl(getPath(locale, entity.slug)),
-        lastModified: entity.updatedAt ? new Date(entity.updatedAt) : undefined,
+        lastModified: entity.updatedAt
+          ? new Date(entity.updatedAt).toISOString().split('.')[0] + 'Z'
+          : undefined,
         changeFrequency: options.changeFrequency,
         priority: options.priority,
       });
@@ -99,31 +106,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entries: MetadataRoute.Sitemap = [];
   const now = new Date();
+  const nowStr = now.toISOString().split('.')[0] + 'Z';
 
   for (const locale of i18n.locales) {
+    const prefix = locale === i18n.defaultLocale ? '' : `/${locale}`;
     entries.push({
-      url: getAbsoluteUrl(`/${locale}`),
-      lastModified: now,
+      url: getAbsoluteUrl(prefix || '/'),
+      lastModified: nowStr,
       changeFrequency: 'daily',
       priority: 1,
     });
     entries.push({
-      url: getAbsoluteUrl(`/${locale}/services`),
+      url: getAbsoluteUrl(`${prefix}/services`),
       changeFrequency: 'daily',
       priority: 0.85,
     });
     entries.push({
-      url: getAbsoluteUrl(`/${locale}/fleet`),
+      url: getAbsoluteUrl(`${prefix}/fleet`),
       changeFrequency: 'daily',
       priority: 0.8,
     });
     entries.push({
-      url: getAbsoluteUrl(`/${locale}/transfers`),
+      url: getAbsoluteUrl(`${prefix}/transfers`),
       changeFrequency: 'daily',
       priority: 0.82,
     });
     entries.push({
-      url: getAbsoluteUrl(`/${locale}/blog`),
+      url: getAbsoluteUrl(`${prefix}/blog`),
       changeFrequency: 'daily',
       priority: 0.8,
     });
@@ -131,35 +140,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const filteredPages = pages.filter((page) => page.slug && page.slug !== 'homepage');
   entries.push(
-    ...entriesFromLocalizedGroups(filteredPages, (locale, slug) => `/${locale}/${slug}`, {
+    ...entriesFromLocalizedGroups(filteredPages, (locale, slug) => localePath(locale, `/${slug}`), {
       priority: 0.8,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(articles, (locale, slug) => `/${locale}/blog/${slug}`, {
+    ...entriesFromLocalizedGroups(articles, (locale, slug) => localePath(locale, `/blog/${slug}`), {
       priority: 0.7,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(services, (locale, slug) => `/${locale}/services/${slug}`, {
+    ...entriesFromLocalizedGroups(services, (locale, slug) => localePath(locale, `/services/${slug}`), {
       priority: 0.75,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(transfers, (locale, slug) => `/${locale}/transfers/${slug}`, {
+    ...entriesFromLocalizedGroups(transfers, (locale, slug) => localePath(locale, `/transfers/${slug}`), {
       priority: 0.72,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(fleets, (locale, slug) => `/${locale}/fleet/${slug}`, {
+    ...entriesFromLocalizedGroups(fleets, (locale, slug) => localePath(locale, `/fleet/${slug}`), {
       priority: 0.7,
       changeFrequency: 'weekly',
     })

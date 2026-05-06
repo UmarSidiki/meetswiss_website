@@ -76,6 +76,18 @@ export async function generateMetadata({
       : {}),
   };
 
+  // Add favicon from Strapi global if present
+  const faviconUrl = pageData.favicon?.url
+    ? strapiImage(pageData.favicon.url)
+    : undefined;
+  if (faviconUrl) {
+    metadata.icons = [
+      { rel: 'icon', url: faviconUrl, type: 'image/png' },
+      { rel: 'shortcut icon', url: faviconUrl, type: 'image/png' },
+      { rel: 'apple-touch-icon', url: faviconUrl, type: 'image/png' },
+    ];
+  }
+
   return metadata;
 }
 

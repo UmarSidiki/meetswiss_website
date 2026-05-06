@@ -1,0 +1,5 @@
+# Dokploy/Nixpacks: force node_modules layout so Strapi builds (Yarn PnP breaks @strapi/strapi
+# resolution for esbuild, design-system, etc.). Some hosts omit dotfiles from the build context;
+# this env applies even without .yarnrc.yml.
+[variables]
+YARN_NODE_LINKER = "node-modules"

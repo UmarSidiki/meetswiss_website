@@ -38,7 +38,8 @@ export async function GET() {
 
   return Response.json(manifest, {
     headers: {
-      'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+      'Content-Type': 'application/manifest+json',
+      'Cache-Control': 'public, max-age=604800, stale-while-revalidate=86400',
     },
   });
 }

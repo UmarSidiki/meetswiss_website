@@ -25,8 +25,8 @@ export const BlogCard = ({
           <BlurImage
             src={strapiImage(article.image.url)}
             alt={article.title}
-            height="1200"
-            width="1200"
+            height={1200}
+            width={1200}
             className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
@@ -89,8 +89,8 @@ export const BlogCardVertical = ({
           <BlurImage
             src={strapiImage(article.image.url || '')}
             alt={article.title}
-            height="800"
-            width="800"
+            height={800}
+            width={800}
             className="h-52 w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] md:h-64"
           />
         ) : (

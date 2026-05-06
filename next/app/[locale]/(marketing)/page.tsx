@@ -7,8 +7,10 @@ import {
   type MeetswissHomepageContent,
 } from '@/components/meetswiss/homepage';
 import { i18n } from '@/i18n.config';
+import { fetchSeoSettings } from '@/lib/seo/settings';
 import { fetchCollectionType } from '@/lib/strapi';
 import { strapiImage } from '@/lib/strapi/strapiImage';
+import { generateMetadataObject } from '@/lib/shared/metadata';
 import type { LocaleParamsProps } from '@/types/types';
 
 type HomepagePage = {
@@ -304,26 +306,25 @@ export async function generateMetadata({
 }: LocaleParamsProps): Promise<Metadata> {
   const { locale } = await params;
 
-  const [pageData] = await fetchCollectionType<HomepagePage[]>('pages', {
-    filters: {
-      slug: {
-        $eq: 'homepage',
-      },
-      locale: locale,
-    },
-  });
+  const [pageData, seoSettings] = await Promise.all([
+    fetchCollectionType<HomepagePage[]>('pages', {
+      filters: { slug: { $eq: 'homepage' }, locale },
+    }).then((items) => items[0]),
+    fetchSeoSettings(locale),
+  ]);
 
   if (!pageData) {
     notFound();
   }
 
-  return {
-    title: pageData.seo?.metaTitle || 'Meetswiss Transfers',
-    description: pageData.seo?.metaDescription || '',
-    alternates: {
-      canonical: `/${locale}`,
-    },
-  };
+  const localizedPaths = Object.fromEntries(i18n.locales.map((l) => [l, '']));
+
+  return generateMetadataObject(pageData.seo, {
+    locale,
+    pathname: '/',
+    localizedPaths,
+    siteSettings: seoSettings,
+  });
 }
 
 export default async function HomePage({ params }: LocaleParamsProps) {

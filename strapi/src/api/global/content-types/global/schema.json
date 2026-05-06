@@ -72,7 +72,7 @@
     },
     "defaultRobots": {
       "type": "string",
-      "default": "index,follow,max-image-preview:large",
+      "default": "index, follow",
       "pluginOptions": {
         "i18n": {
           "localized": true
@@ -135,6 +135,12 @@
         "images"
       ]
     },
+    "favicon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
     "xHandle": {
       "type": "string",
       "pluginOptions": {
@@ -172,6 +178,22 @@
     },
     "facebookDomainVerification": {
       "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "headerTags": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "footerTags": {
+      "type": "text",
       "pluginOptions": {
         "i18n": {
           "localized": true

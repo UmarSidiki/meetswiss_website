@@ -4,6 +4,7 @@ import { EB_Garamond, Lato } from 'next/font/google';
 import { Suspense } from 'react';
 
 import { getAbsoluteUrl } from '@/lib/seo/config';
+import { fetchSingleType } from '@/lib/strapi';
 
 import './globals.css';
 
@@ -59,22 +60,40 @@ function RootLoading() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch global settings for header tags
+  let globalSettings: any = {};
+  try {
+    globalSettings = await fetchSingleType('global', { locale: 'en' });
+  } catch (error) {
+    // Silently fail if global settings cannot be fetched
+  }
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
     >
+      <head>
+        {/* Dynamically injected header tags from Strapi */}
+        {globalSettings.headerTags && (
+          <>{/* @ts-ignore */}<div dangerouslySetInnerHTML={{ __html: globalSettings.headerTags }} /></>
+        )}
+      </head>
       <body suppressHydrationWarning>
         <Preview />
         <SlugProvider>
           <Suspense fallback={<RootLoading />}>{children}</Suspense>
         </SlugProvider>
+        {/* Dynamically injected footer tags from Strapi */}
+        {globalSettings.footerTags && (
+          <>{/* @ts-ignore */}<div dangerouslySetInnerHTML={{ __html: globalSettings.footerTags }} /></>
+        )}
       </body>
     </html>
   );

@@ -36,6 +36,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.strapiapp.com',
       },
+      // External asset host (e.g. s3.itupdown.com/meetswiss/...)
+      {
+        protocol: 'https',
+        hostname: 's3.itupdown.com',
+        pathname: '/meetswiss/**',
+      },
     ],
   },
   pageExtensions: ['ts', 'tsx'],

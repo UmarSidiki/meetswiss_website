@@ -14,7 +14,7 @@ export const defaultLocale = i18n.defaultLocale;
 
 export const localeAlternates = i18n.locales.reduce<Record<string, string>>(
   (acc, locale) => {
-    acc[locale] = `/${locale}`;
+    acc[locale] = locale === defaultLocale ? '' : `/${locale}`;
     return acc;
   },
   {}

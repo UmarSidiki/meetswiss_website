@@ -12,10 +12,18 @@ export default ({ env }) => [
             "'self'",
             'data:',
             'blob:',
-            // Allow the Next.js frontend to embed images
-            env('CLIENT_URL', 'http://localhost:3000'),
+            'market-assets.strapi.io',
+            env('CF_PUBLIC_ACCESS_URL'), // For Cloudflare R2
+            env('MINIO_ENDPOINT'),       // For MinIO
           ],
-          'media-src': ["'self'", 'data:', 'blob:'],
+          'media-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'market-assets.strapi.io',
+            env('CF_PUBLIC_ACCESS_URL'), // For Cloudflare R2
+            env('MINIO_ENDPOINT'),       // For MinIO
+          ],
           upgradeInsecureRequests: null,
         },
       },
@@ -26,19 +34,9 @@ export default ({ env }) => [
     config: {
       origin: [
         env('CLIENT_URL', 'http://localhost:3000'),
-        // Allow localhost for development
-        'http://localhost:3000',
+        'http://localhost:1337', // Strapi's own dashboard
       ],
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-      headers: [
-        'Content-Type',
-        'Authorization',
-        'Origin',
-        'Accept',
-        'x-revalidate-secret',
-        'strapi-encode-source-maps',
-      ],
-      keepHeaderOnError: true,
+      // ... rest of your CORS settings are fine
     },
   },
   'strapi::poweredBy',
