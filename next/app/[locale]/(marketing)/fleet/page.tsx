@@ -8,6 +8,7 @@ import { Subheading } from '@/components/elements/subheading';
 import { StructuredData } from '@/components/seo/structured-data';
 import { FleetCard } from '@/components/services/fleet-card';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
@@ -81,7 +82,7 @@ export async function generateMetadata({
           '@type': 'ListItem',
           position: index + 1,
           name: fleet.name,
-          url: getAbsoluteUrl(`/${locale}/fleet/${fleet.slug}`),
+          url: getAbsoluteUrl(localePath(locale, `/fleet/${fleet.slug}`)),
         })),
       },
     },
@@ -113,7 +114,7 @@ export default async function FleetPage({ params }: LocaleParamsProps) {
       '@type': 'ListItem',
       position: index + 1,
       name: fleet.name,
-      url: getAbsoluteUrl(`/${locale}/fleet/${fleet.slug}`),
+      url: getAbsoluteUrl(localePath(locale, `/fleet/${fleet.slug}`)),
     })),
   };
 

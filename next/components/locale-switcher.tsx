@@ -5,34 +5,36 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 import { useSlugContext } from '@/app/context/SlugContext';
+import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { cn } from '@/lib/utils';
 
 export function LocaleSwitcher({ currentLocale }: { currentLocale: string }) {
   const { state } = useSlugContext();
   const { localizedSlugs } = state;
 
-  const pathname = usePathname(); // Current path
-  const segments = pathname.split('/'); // Split path into segments
+  const pathname = usePathname() ?? '/';
 
-  // Generate localized path for each locale
+  // Strip leading locale (if any) to get the bare path the user is on.
+  const stripLeadingLocale = (raw: string): string => {
+    const segs = raw.split('/').filter(Boolean);
+    if (segs.length && (i18n.locales as readonly string[]).includes(segs[0])) {
+      segs.shift();
+    }
+    return segs.length ? `/${segs.join('/')}` : '/';
+  };
+
   const generateLocalizedPath = (locale: string): string => {
-    if (!pathname) return `/${locale}`; // Default to root path for the locale
+    const barePath = stripLeadingLocale(pathname);
 
-    // Handle homepage (e.g., "/en" -> "/fr")
-    if (segments.length <= 2) {
-      return `/${locale}`;
+    // Replace last segment with localized slug if Strapi provided one
+    if (localizedSlugs[locale] && barePath !== '/') {
+      const segs = barePath.split('/').filter(Boolean);
+      segs[segs.length - 1] = localizedSlugs[locale];
+      return localePath(locale, `/${segs.join('/')}`);
     }
 
-    // Handle dynamic paths (e.g., "/en/blog/[slug]")
-    if (localizedSlugs[locale]) {
-      segments[1] = locale; // Replace the locale
-      segments[segments.length - 1] = localizedSlugs[locale]; // Replace slug if available
-      return segments.join('/');
-    }
-
-    // Fallback to replace only the locale
-    segments[1] = locale;
-    return segments.join('/');
+    return localePath(locale, barePath);
   };
 
   return (

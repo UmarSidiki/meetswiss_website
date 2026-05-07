@@ -12,6 +12,7 @@ import { Subheading } from '@/components/elements/subheading';
 import { StructuredData } from '@/components/seo/structured-data';
 import { StrapiImage } from '@/components/ui/strapi-image';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
@@ -344,11 +345,11 @@ export default async function ContactPage({
     '@type': 'ContactPage',
     name: copy.title,
     description: copy.subtitle,
-    url: getAbsoluteUrl(`/${locale}/contact`),
+    url: getAbsoluteUrl(localePath(locale, '/contact')),
     mainEntity: {
       '@type': 'Organization',
       name: seoSettings.organizationName || globalData?.siteName,
-      url: seoSettings.organizationUrl || getAbsoluteUrl(`/${locale}`),
+      url: seoSettings.organizationUrl || getAbsoluteUrl(localePath(locale)),
       contactPoint: [
         contactEmail
           ? {

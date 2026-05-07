@@ -59,13 +59,13 @@ function resolveRobots(robotsInput?: string): Metadata['robots'] | undefined {
     robots.notranslate = true;
   }
   if (directives.includes('max-image-preview:large')) {
-    robots.maxImagePreview = 'large';
+    robots['max-image-preview'] = 'large';
   }
   if (directives.includes('max-image-preview:standard')) {
-    robots.maxImagePreview = 'standard';
+    robots['max-image-preview'] = 'standard';
   }
   if (directives.includes('max-image-preview:none')) {
-    robots.maxImagePreview = 'none';
+    robots['max-image-preview'] = 'none';
   }
 
   return robots;

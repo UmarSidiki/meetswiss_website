@@ -9,6 +9,7 @@ import { Subheading } from '@/components/elements/subheading';
 import { StructuredData } from '@/components/seo/structured-data';
 import { StrapiImage } from '@/components/ui/strapi-image';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
@@ -79,7 +80,7 @@ export async function generateMetadata({
           '@type': 'ListItem',
           position: index + 1,
           name: transfer.title,
-          url: getAbsoluteUrl(`/${locale}/transfers/${transfer.slug}`),
+          url: getAbsoluteUrl(localePath(locale, `/transfers/${transfer.slug}`)),
         })),
       },
     },
@@ -111,7 +112,7 @@ export default async function TransfersPage({ params }: LocaleParamsProps) {
       '@type': 'ListItem',
       position: index + 1,
       name: transfer.title,
-      url: getAbsoluteUrl(`/${locale}/transfers/${transfer.slug}`),
+      url: getAbsoluteUrl(localePath(locale, `/transfers/${transfer.slug}`)),
     })),
   };
 
@@ -147,7 +148,7 @@ export default async function TransfersPage({ params }: LocaleParamsProps) {
             transfers.map((transfer, index) => (
               <Link
                 key={transfer.id || `${transfer.slug}-${index}`}
-                href={`/${locale}/transfers/${transfer.slug}`}
+                href={localePath(locale, `/transfers/${transfer.slug}`)}
                 className="group overflow-hidden rounded-2xl border border-primary/25 bg-[#111] transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 hover:shadow-[0_18px_36px_rgba(0,0,0,0.4)]"
               >
                 <div className="relative overflow-hidden">

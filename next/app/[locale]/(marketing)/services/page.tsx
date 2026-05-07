@@ -8,6 +8,7 @@ import { Subheading } from '@/components/elements/subheading';
 import { StructuredData } from '@/components/seo/structured-data';
 import { ServiceCard } from '@/components/services/service-card';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
@@ -79,7 +80,7 @@ export async function generateMetadata({
           '@type': 'ListItem',
           position: index + 1,
           name: service.title,
-          url: getAbsoluteUrl(`/${locale}/services/${service.slug}`),
+          url: getAbsoluteUrl(localePath(locale, `/services/${service.slug}`)),
         })),
       },
     },

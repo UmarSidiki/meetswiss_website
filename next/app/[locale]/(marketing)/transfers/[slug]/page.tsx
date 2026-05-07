@@ -14,6 +14,7 @@ import { StructuredData } from '@/components/seo/structured-data';
 import { TransferBookingFormEmbed } from '@/components/transfers/transfer-booking-form-embed';
 import { StrapiImage } from '@/components/ui/strapi-image';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
@@ -143,7 +144,7 @@ export default async function TransferDetailPage({
     '@type': 'TouristDestination',
     name: transfer.title,
     description: transfer.short_description,
-    url: getAbsoluteUrl(`/${locale}/transfers/${slug}`),
+    url: getAbsoluteUrl(localePath(locale, `/transfers/${slug}`)),
   };
 
   return (

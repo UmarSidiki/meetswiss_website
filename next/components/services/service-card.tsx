@@ -1,6 +1,7 @@
 import { Link } from 'next-view-transitions';
 
 import { StrapiImage } from '@/components/ui/strapi-image';
+import { localePath } from '@/lib/locale-path';
 
 type Service = {
   title: string;
@@ -18,7 +19,7 @@ export function ServiceCard({
 }) {
   return (
     <Link
-      href={`/${locale}/services/${service.slug}` as never}
+      href={localePath(locale, `/services/${service.slug}`) as never}
       className="group relative min-h-[17rem] overflow-hidden rounded-2xl border border-primary/25 transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 hover:shadow-[0_20px_42px_rgba(0,0,0,0.45)]"
     >
       {service.hero_image?.url ? (

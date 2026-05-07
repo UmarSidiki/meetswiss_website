@@ -10,6 +10,7 @@ import { StructuredData } from '@/components/seo/structured-data';
 import { ServiceCard } from '@/components/services/service-card';
 import { StrapiImage } from '@/components/ui/strapi-image';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
@@ -142,7 +143,7 @@ export default async function FleetDetailPage({
     '@type': 'Product',
     name: fleet.name,
     description: fleet.description,
-    url: getAbsoluteUrl(`/${locale}/fleet/${slug}`),
+    url: getAbsoluteUrl(localePath(locale, `/fleet/${slug}`)),
   };
 
   return (

@@ -11,6 +11,7 @@ import {
 import { SiTiktok } from 'react-icons/si';
 
 import { i18n } from '@/i18n.config';
+import { isExternalUrl } from '@/lib/locale-path';
 
 const SOCIAL_ICONS: Record<string, IconType> = {
   facebook: FaFacebookF,
@@ -204,21 +205,26 @@ export const Footer = async ({
                 <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
                   {column.heading}
                 </h3>
-                {(column.links ?? []).map((link, j) => (
-                  <Link
-                    key={`${link.text}-${j}`}
-                    className="text-sm text-[#d9d1c1] transition-colors hover:text-primary"
-                    href={`${basePath}${link.URL ?? ''}`}
-                    target={link.target}
-                    rel={
-                      link.target === '_blank'
-                        ? 'noopener noreferrer'
-                        : undefined
-                    }
-                  >
-                    {link.text}
-                  </Link>
-                ))}
+                {(column.links ?? []).map((link, j) => {
+                  const href = isExternalUrl(link.URL)
+                    ? link.URL
+                    : `${basePath}${link.URL ?? ''}`;
+                  return (
+                    <Link
+                      key={`${link.text}-${j}`}
+                      className="text-sm text-[#d9d1c1] transition-colors hover:text-primary"
+                      href={href}
+                      target={link.target}
+                      rel={
+                        link.target === '_blank'
+                          ? 'noopener noreferrer'
+                          : undefined
+                      }
+                    >
+                      {link.text}
+                    </Link>
+                  );
+                })}
               </div>
             ))}
           </div>

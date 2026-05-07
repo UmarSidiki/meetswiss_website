@@ -4,6 +4,7 @@ import React from 'react';
 import Balancer from 'react-wrap-balancer';
 
 import { BlurImage } from '@/components/blur-image';
+import { localePath } from '@/lib/locale-path';
 import { strapiImage } from '@/lib/strapi/strapiImage';
 import { truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
@@ -17,7 +18,7 @@ export const BlogCard = ({
 }) => {
   return (
     <Link
-      href={`/${locale}/blog/${article.slug}`}
+      href={localePath(locale, `/blog/${article.slug}`)}
       className="group grid w-full grid-cols-1 overflow-hidden rounded-2xl border border-primary/25 bg-[#111] transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] md:grid-cols-2"
     >
       <div className="relative min-h-[14rem] overflow-hidden md:min-h-[20rem]">
@@ -81,7 +82,7 @@ export const BlogCardVertical = ({
 }) => {
   return (
     <Link
-      href={`/${locale}/blog/${article.slug}`}
+      href={localePath(locale, `/blog/${article.slug}`)}
       className="group overflow-hidden rounded-2xl border border-primary/25 bg-[#111] transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 hover:shadow-[0_18px_36px_rgba(0,0,0,0.4)]"
     >
       <div className="relative overflow-hidden">

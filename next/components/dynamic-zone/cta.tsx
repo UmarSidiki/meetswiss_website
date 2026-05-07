@@ -7,6 +7,7 @@ import React from 'react';
 import { Container } from '../container';
 import { AmbientColor } from '../decorations/ambient-color';
 import { Button } from '../elements/button';
+import { localePath } from '@/lib/locale-path';
 import { EASE_OUT_QUART, viewport } from '@/lib/motion';
 
 export const CTA = ({
@@ -50,7 +51,7 @@ export const CTA = ({
               <Button
                 as={Link}
                 key={index}
-                href={`/${locale}${cta.URL}`}
+                href={localePath(locale, cta.URL)}
                 variant={cta.variant}
                 className="py-3"
               >

@@ -2,6 +2,7 @@ import { Link } from 'next-view-transitions';
 import { FaSuitcaseRolling, FaUserFriends } from 'react-icons/fa';
 
 import { StrapiImage } from '@/components/ui/strapi-image';
+import { localePath } from '@/lib/locale-path';
 
 type Fleet = {
   name: string;
@@ -82,7 +83,7 @@ export function FleetCard({
 
   if (locale && fleet.slug) {
     return (
-      <Link href={`/${locale}/fleet/${fleet.slug}`} className="block">
+      <Link href={localePath(locale, `/fleet/${fleet.slug}`)} className="block">
         {card}
       </Link>
     );

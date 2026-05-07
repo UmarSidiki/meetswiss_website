@@ -7,6 +7,8 @@ import ClientSlugHandler from '../../ClientSlugHandler';
 import { BlogLayout } from '@/components/blog-layout';
 import { StructuredData } from '@/components/seo/structured-data';
 import { i18n } from '@/i18n.config';
+import { localePath } from '@/lib/locale-path';
+import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchSeoSettings } from '@/lib/seo/settings';
 import { generateMetadataObject } from '@/lib/shared/metadata';
 import { fetchCollectionAllLocales, fetchCollectionType } from '@/lib/strapi';
@@ -50,7 +52,7 @@ function buildArticleStructuredData({
     image: article.image?.url ? [strapiImage(article.image.url)] : [],
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
-    mainEntityOfPage: `/${locale}/blog/${slug}`,
+    mainEntityOfPage: getAbsoluteUrl(localePath(locale, `/blog/${slug}`)),
   };
 }
 

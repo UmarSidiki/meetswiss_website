@@ -181,7 +181,7 @@ export function Navbar({
     };
   }, [mobileOpen]);
 
-  const basePath = `/${locale}`;
+  const basePath = locale === i18n.defaultLocale ? '/' : `/${locale}`;
   const { leftNavbarItems, rightNavbarItems } = getNavItems(data);
   const primaryAction =
     rightNavbarItems[rightNavbarItems.length - 1] ||

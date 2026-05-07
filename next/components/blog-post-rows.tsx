@@ -5,6 +5,7 @@ import FuzzySearch from 'fuzzy-search';
 import { Link } from 'next-view-transitions';
 import React, { useEffect, useState } from 'react';
 
+import { localePath } from '@/lib/locale-path';
 import { truncate } from '@/lib/utils';
 import { Article } from '@/types/types';
 
@@ -71,7 +72,7 @@ export const BlogPostRow = ({
 }) => {
   return (
     <Link
-      href={`/${locale}/blog/${article.slug}`}
+      href={localePath(locale, `/blog/${article.slug}`)}
       className="group flex flex-col items-start justify-between gap-3 py-5 transition-colors duration-200 md:flex-row md:items-center"
     >
       <div className="flex-1">

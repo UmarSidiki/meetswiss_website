@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { i18n } from '@/i18n.config';
+import { localePath as buildLocalePath } from '@/lib/locale-path';
 import { getAbsoluteUrl } from '@/lib/seo/config';
 import { fetchCollectionAllLocales } from '@/lib/strapi';
 
@@ -12,7 +13,15 @@ type LocalizedEntity = {
   slug?: string | null;
   locale?: string | null;
   updatedAt?: string | null;
+  publishedAt?: string | null;
+  seo?: { metaRobots?: string | null } | null;
 };
+
+function isIndexable(entity: LocalizedEntity): boolean {
+  if (!entity.publishedAt) return false;
+  const robots = entity.seo?.metaRobots?.toLowerCase() ?? '';
+  return !robots.includes('noindex');
+}
 
 type GroupedEntity = {
   [locale: string]: LocalizedEntity;
@@ -46,10 +55,7 @@ function groupByIdentity(entities: LocalizedEntity[]) {
   return grouped;
 }
 
-function localePath(locale: string, path: string): string {
-  const prefix = locale === i18n.defaultLocale ? '' : `/${locale}`;
-  return `${prefix}${path}`;
-}
+const localePath = buildLocalePath;
 
 /** One `<url>` per localized path — avoids `xhtml:link` / `alternates` in generated XML. */
 function entriesFromLocalizedGroups(
@@ -83,23 +89,28 @@ function entriesFromLocalizedGroups(
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [pages, articles, transfers, services, fleets] = await Promise.all([
     fetchCollectionAllLocales<LocalizedEntity[]>('pages', {
-      fields: ['slug', 'locale', 'updatedAt', 'documentId'],
+      fields: ['slug', 'locale', 'updatedAt', 'publishedAt', 'documentId'],
+      populate: { seo: { fields: ['metaRobots'] } },
       pagination: { pageSize: 1000 },
     }),
     fetchCollectionAllLocales<LocalizedEntity[]>('articles', {
-      fields: ['slug', 'locale', 'updatedAt', 'documentId'],
+      fields: ['slug', 'locale', 'updatedAt', 'publishedAt', 'documentId'],
+      populate: { seo: { fields: ['metaRobots'] } },
       pagination: { pageSize: 1000 },
     }),
     fetchCollectionAllLocales<LocalizedEntity[]>('transfers', {
-      fields: ['slug', 'locale', 'updatedAt', 'documentId'],
+      fields: ['slug', 'locale', 'updatedAt', 'publishedAt', 'documentId'],
+      populate: { seo: { fields: ['metaRobots'] } },
       pagination: { pageSize: 1000 },
     }),
     fetchCollectionAllLocales<LocalizedEntity[]>('services', {
-      fields: ['slug', 'locale', 'updatedAt', 'documentId'],
+      fields: ['slug', 'locale', 'updatedAt', 'publishedAt', 'documentId'],
+      populate: { seo: { fields: ['metaRobots'] } },
       pagination: { pageSize: 1000 },
     }),
     fetchCollectionAllLocales<LocalizedEntity[]>('fleets', {
-      fields: ['slug', 'locale', 'updatedAt', 'documentId'],
+      fields: ['slug', 'locale', 'updatedAt', 'publishedAt', 'documentId'],
+      populate: { seo: { fields: ['metaRobots'] } },
       pagination: { pageSize: 1000 },
     }),
   ]);
@@ -138,7 +149,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  const filteredPages = pages.filter((page) => page.slug && page.slug !== 'homepage');
+  const filteredPages = pages.filter(
+    (page) => page.slug && page.slug !== 'homepage' && isIndexable(page)
+  );
   entries.push(
     ...entriesFromLocalizedGroups(filteredPages, (locale, slug) => localePath(locale, `/${slug}`), {
       priority: 0.8,
@@ -147,28 +160,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(articles, (locale, slug) => localePath(locale, `/blog/${slug}`), {
+    ...entriesFromLocalizedGroups(articles.filter(isIndexable), (locale, slug) => localePath(locale, `/blog/${slug}`), {
       priority: 0.7,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(services, (locale, slug) => localePath(locale, `/services/${slug}`), {
+    ...entriesFromLocalizedGroups(services.filter(isIndexable), (locale, slug) => localePath(locale, `/services/${slug}`), {
       priority: 0.75,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(transfers, (locale, slug) => localePath(locale, `/transfers/${slug}`), {
+    ...entriesFromLocalizedGroups(transfers.filter(isIndexable), (locale, slug) => localePath(locale, `/transfers/${slug}`), {
       priority: 0.72,
       changeFrequency: 'weekly',
     })
   );
 
   entries.push(
-    ...entriesFromLocalizedGroups(fleets, (locale, slug) => localePath(locale, `/fleet/${slug}`), {
+    ...entriesFromLocalizedGroups(fleets.filter(isIndexable), (locale, slug) => localePath(locale, `/fleet/${slug}`), {
       priority: 0.7,
       changeFrequency: 'weekly',
     })
